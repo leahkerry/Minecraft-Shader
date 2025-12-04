@@ -1,5 +1,6 @@
 #version 120
 #include "/settings.glsl"
+#include "/settings.glsl"
 
 uniform float viewHeight;
 uniform float viewWidth;
@@ -21,6 +22,9 @@ vec3 calcSkyColor(vec3 pos) {
     vec3 skyColor = mix(skyColor, fogColor, fogify(max(upDot, 0.0), 0.25)); 
     // skyColor = mix(skyColor, vec3(1.,0.,1.), 0.4);
 	return skyColor; 
+    vec3 skyColor = mix(skyColor, fogColor, fogify(max(upDot, 0.0), 0.25)); 
+    // skyColor = mix(skyColor, vec3(1.,0.,1.), 0.4);
+	return skyColor;
 }
 
 void main() {

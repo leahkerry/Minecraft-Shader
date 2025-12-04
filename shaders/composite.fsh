@@ -1,14 +1,20 @@
 #version 120
 
 #define DRAW_SHADOW_MAP gcolor //Configures which buffer to draw to the screen [gcolor shadowcolor0 shadowtex0 shadowtex1]
+<<<<<<< HEAD
 #include "/settings.glsl"
 
+=======
+>>>>>>> 5687c4b3353ba09ed5c7047f3d077651f28aa719
 
 uniform float frameTimeCounter;
 uniform sampler2D gcolor;
 uniform sampler2D shadowcolor0;
 uniform sampler2D shadowtex0;
+<<<<<<< HEAD
 
+=======
+>>>>>>> 5687c4b3353ba09ed5c7047f3d077651f28aa719
 uniform sampler2D shadowtex1;
 
 varying vec2 texcoord;
@@ -21,11 +27,9 @@ vec3 make_red(in vec3 color, in float amount) {
 void main() {
 	vec3 color = texture2D(DRAW_SHADOW_MAP, texcoord).rgb;
     // vec3 red = vec3(texcoord.x,0.0,texcoord.y);
-    // color = make_red(color, RED_AMOUNT);
-    // color = vec3(color.r * texcoord.x, 0.0, color.b * texcoord.y);
-    // color = color * (rainbow * 0.5);
+    float amount = 0.5;
+    color = make_red(color, amount);
     // draw buffer 0 is main one at end
 /* DRAWBUFFERS:0 */
-    float avg_color = (color.r = color.b + color.g) / 3.;
 	gl_FragData[0] = vec4(color, 1.0); //gcolor
 }

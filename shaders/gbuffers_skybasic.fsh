@@ -1,6 +1,5 @@
 #version 120
 #include "/settings.glsl"
-#include "/settings.glsl"
 
 uniform float viewHeight;
 uniform float viewWidth;

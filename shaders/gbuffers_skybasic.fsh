@@ -1,4 +1,5 @@
 #version 120
+#include "/settings.glsl"
 
 uniform float viewHeight;
 uniform float viewWidth;
@@ -17,7 +18,9 @@ float fogify(float x, float w) {
 
 vec3 calcSkyColor(vec3 pos) {
 	float upDot = dot(pos, gbufferModelView[1].xyz); //not much, what's up with you?
-	return mix(skyColor, fogColor, fogify(max(upDot, 0.0), 0.25));
+    vec3 skyColor = mix(skyColor, fogColor, fogify(max(upDot, 0.0), 0.25)); 
+    // skyColor = mix(skyColor, vec3(1.,0.,1.), 0.4);
+	return skyColor; 
 }
 
 void main() {
@@ -30,6 +33,14 @@ void main() {
 		pos = gbufferProjectionInverse * pos;
 		color = calcSkyColor(normalize(pos.xyz));
 	}
+
+    #if BLACK_SKY == 1
+        color = vec3(0.0);
+    #endif
+
+    #if PURPLE_SKY == 1
+        color = vec3(0.60, 0.45, 0.83);
+    #endif
 
 /* DRAWBUFFERS:0 */
 	gl_FragData[0] = vec4(color, 1.0); //gcolor

@@ -9,6 +9,6 @@ varying vec4 glcolor;
 
 void main() {
 	vec4 color = texture2D(texture, texcoord) * glcolor;
-
+    // color = color * 2.5;
 	gl_FragData[0] = color;
 }

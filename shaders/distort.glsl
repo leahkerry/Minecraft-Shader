@@ -5,6 +5,8 @@
 #define EXCLUDE_FOLIAGE //If true, foliage will not cast shadows.
 #define SHADOW_BRIGHTNESS 0.75 //Light levels are multiplied by this number when the surface is in shadows [0.00 0.05 0.10 0.15 0.20 0.25 0.30 0.35 0.40 0.45 0.50 0.55 0.60 0.65 0.70 0.75 0.80 0.85 0.90 0.95 1.00]
 
+#include "/settings.glsl"
+
 const int shadowMapResolution = 1024; //Resolution of the shadow map. Higher numbers mean more accurate shadows. [128 256 512 1024 2048 4096 8192]
 
 #ifdef SHADOW_DISTORT_ENABLED
@@ -27,6 +29,7 @@ const int shadowMapResolution = 1024; //Resolution of the shadow map. Higher num
 #else
 	vec3 distort(vec3 pos) {
 		return vec3(pos.xy, pos.z * 0.5);
+        // return pos;
 	}
 
 	float computeBias(vec3 pos) {

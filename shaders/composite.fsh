@@ -26,6 +26,6 @@ void main() {
     // color = color * (rainbow * 0.5);
     // draw buffer 0 is main one at end
 /* DRAWBUFFERS:0 */
-    float avg_color = (color.r = color.b + color.g) / 3.;
+    float avg_color = (color.r + color.b + color.g) / 3.;
 	gl_FragData[0] = vec4(color, 1.0); //gcolor
 }

@@ -7,6 +7,7 @@ uniform float frameTimeCounter;
 uniform sampler2D gcolor;
 uniform sampler2D shadowcolor0;
 uniform sampler2D shadowtex0;
+
 uniform sampler2D shadowtex1;
 
 varying vec2 texcoord;

@@ -12,3 +12,4 @@
 #define BORDER_FOG_START 0.075 //[0.075 0.08 0.09]
 
 #define SATURATION 1.5 // [0.0 0.25 0.5 0.75 1.0 1.25 1.5 1.75 2.0]
+#define LIGHTING_STYLE 0 //[0 1]

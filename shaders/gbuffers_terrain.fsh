@@ -15,11 +15,15 @@ uniform vec3 fogColor;
 uniform float far; // far render distance
 uniform int heldItemId;
 
+uniform float sunAngle; 
+uniform vec3 shadowLightPosition; // sun or moon
+
 varying vec2 lmcoord;
 varying vec2 texcoord;
 varying vec4 glcolor;
 varying vec4 shadowPos;
 varying vec3 viewPos_v3;
+varying vec3 normals_face;
 
 //fix artifacts when colored shadows are enabled
 const bool shadowcolor0Nearest = true;
@@ -38,42 +42,62 @@ vec3 adjust_sat2(vec3 color, float satBoost)
 
 void main() {
 	vec4 color = texture2D(texture, texcoord) * glcolor;
-	vec2 lm = lmcoord;
-	if (shadowPos.w > 0.0) {
-		//surface is facing towards shadowLightPosition
-		#if COLORED_SHADOWS == 0
-			//for normal shadows, only consider the closest thing to the sun,
-			//regardless of whether or not it's opaque.
-			if (texture2D(shadowtex0, shadowPos.xy).r < shadowPos.z) {
-		#else
-			//for invisible and colored shadows, first check the closest OPAQUE thing to the sun.
-			if (texture2D(shadowtex1, shadowPos.xy).r < shadowPos.z) {
-		#endif
-			//surface is in shadows. reduce light level.
-			lm.y *= SHADOW_BRIGHTNESS;
-		}
-		else {
-			//surface is in direct sunlight. increase light level.
-			lm.y = mix(31.0 / 32.0 * SHADOW_BRIGHTNESS, 31.0 / 32.0, sqrt(shadowPos.w));
-			#if COLORED_SHADOWS == 1
-				//when colored shadows are enabled and there's nothing OPAQUE between us and the sun,
-				//perform a 2nd check to see if there's anything translucent between us and the sun.
-				if (texture2D(shadowtex0, shadowPos.xy).r < shadowPos.z) {
-					//surface has translucent object between it and the sun. modify its color.
-					//if the block light is high, modify the color less.
-					vec4 shadowLightColor = texture2D(shadowcolor0, shadowPos.xy);
-					//make colors more intense when the shadow light color is more opaque.
-					shadowLightColor.rgb = mix(vec3(1.0), shadowLightColor.rgb, shadowLightColor.a);
-					//also make colors less intense when the block light level is high.
-					shadowLightColor.rgb = mix(shadowLightColor.rgb, vec3(1.0), lm.x);
-					//apply the color.
-					color.rgb *= shadowLightColor.rgb;
-				}
-			#endif
-		}
-	}
-	color *= texture2D(lightmap, lm);
+	// vec4 color = glcolor;
+	vec2 lm = lmcoord; // light map: for shadows, torches, time of day
+    // lm.x = torch
+    //lm.y = sky light
 
+    // applies darkness, night, shadow
+    #if LIGHTING_STYLE == 0
+        if (shadowPos.w > 0.0) {
+            //surface is facing towards shadowLightPosition
+            #if COLORED_SHADOWS == 0
+                //for normal shadows, only consider the closest thing to the sun,
+                //regardless of whether or not it's opaque.
+                if (texture2D(shadowtex0, shadowPos.xy).r < shadowPos.z) {
+            #else
+                //for invisible and colored shadows, first check the closest OPAQUE thing to the sun.
+                if (texture2D(shadowtex1, shadowPos.xy).r < shadowPos.z) {
+            #endif
+                //surface is in shadows. reduce light level.
+                lm.y *= SHADOW_BRIGHTNESS;
+            }
+            else {
+                //surface is in direct sunlight. increase light level.
+                lm.y = mix(31.0 / 32.0 * SHADOW_BRIGHTNESS, 31.0 / 32.0, sqrt(shadowPos.w));
+                #if COLORED_SHADOWS == 1
+                    //when colored shadows are enabled and there's nothing OPAQUE between us and the sun,
+                    //perform a 2nd check to see if there's anything translucent between us and the sun.
+                    if (texture2D(shadowtex0, shadowPos.xy).r < shadowPos.z) {
+                        //surface has translucent object between it and the sun. modify its color.
+                        //if the block light is high, modify the color less.
+                        vec4 shadowLightColor = texture2D(shadowcolor0, shadowPos.xy);
+                        //make colors more intense when the shadow light color is more opaque.
+                        shadowLightColor.rgb = mix(vec3(1.0), shadowLightColor.rgb, shadowLightColor.a);
+                        //also make colors less intense when the block light level is high.
+                        shadowLightColor.rgb = mix(shadowLightColor.rgb, vec3(1.0), lm.x);
+                        //apply the color.
+                        color.rgb *= shadowLightColor.rgb;
+                    }
+                #endif
+            }
+        }
+    
+
+	    color *= texture2D(lightmap, lm);
+    #endif 
+    #if LIGHITNG_STYLE == 1 
+        float light = dot(normalize(shadowPos), normalize(normals_face));
+        color.rgb = color.rgb + light; 
+        // vec3 torch_color = vec3(1., 1., 0.);
+        // // color *= texture2D(lightmap, lm); // black, white, colored
+        // vec3 torch_color = vec3(1., 1., 0.);
+        // vec3 sky_color = vec3(0., 0., 1.);
+        // if (sunAngle >= 0.5) {
+        //     sky_color = 0.0;
+        // }
+        // color.rgb = color.rgb * (torch_color * lm.x + sky_color * lm.y)  ;  // x is torch value of lightmap
+    #endif 
 	// Fog Color
 	#ifdef ENABLE_FOG
 		float borderFogAmount = clamp((distance(vec3(0.0), viewPos_v3) - (BORDER_FOG_START * far))/((1 - BORDER_FOG_START) * far), 0.0, 1.0);	

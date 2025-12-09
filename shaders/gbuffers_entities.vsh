@@ -8,6 +8,9 @@ uniform vec3 shadowLightPosition;
 uniform vec3 moonPosition;
 uniform vec2 vaUV2;
 uniform vec3 vaNormal;
+uniform vec3 cameraPosition; 
+uniform int worldTime;
+uniform int entityId; 
 
 varying vec2 lmcoord;
 varying vec2 texcoord;
@@ -60,4 +63,14 @@ void main()
 	shadowPos.w = lightDot;
 	// use consistent transforms for entities and hand so that armor glint doesn't have z-fighting issues.
 	gl_Position = gl_ProjectionMatrix * viewPos;
+
+    if (entityId == 10010) {
+        float xpos = (gbufferModelViewInverse * viewPos).x;
+        // gl_Position.xy = gl_Position.xy + (sin( worldTime * 0.1) * vec2(0.1 ));
+        vec3 eyeCameraPosition = cameraPosition + gbufferModelViewInverse[3].xyz;
+        xpos = xpos + eyeCameraPosition.x;
+        // gl_Position.y = gl_Position.y + eyeCameraPosition.y;
+        gl_Position.y = gl_Position.y + sin(0.001 * worldTime * xpos) * 0.15;
+        
+    }
 }

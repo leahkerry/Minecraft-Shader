@@ -7,11 +7,14 @@ uniform mat4 gbufferModelViewInverse;
 uniform mat4 shadowModelView;
 uniform mat4 shadowProjection;
 uniform vec3 shadowLightPosition;
+uniform int worldTime; 
+uniform vec3 cameraPosition;
 
 varying vec2 lmcoord;
 varying vec2 texcoord;
 varying vec4 glcolor;
 varying vec4 shadowPos;
+varying vec3 normals_face;
 
 #include "/distort.glsl"
 
@@ -19,6 +22,7 @@ void main() {
 	texcoord = (gl_TextureMatrix[0] * gl_MultiTexCoord0).xy;
 	lmcoord  = (gl_TextureMatrix[1] * gl_MultiTexCoord1).xy;
 	glcolor = gl_Color;
+    normals_face = gl_NormalMatrix * gl_Normal;
 
 	float lightDot = dot(normalize(shadowLightPosition), normalize(gl_NormalMatrix * gl_Normal));
 	#ifdef EXCLUDE_FOLIAGE
@@ -50,4 +54,13 @@ void main() {
 	}
 	shadowPos.w = lightDot;
 	gl_Position = gl_ProjectionMatrix * viewPos;
+    if (mc_Entity.x == 10001) {
+        float ypos = (gbufferModelViewInverse * viewPos).y;
+        // gl_Position.xy = gl_Position.xy + (sin( worldTime * 0.1) * vec2(0.1 ));
+        vec3 eyeCameraPosition = cameraPosition + gbufferModelViewInverse[3].xyz;
+        ypos = ypos + eyeCameraPosition.y;
+        // gl_Position.y = gl_Position.y + eyeCameraPosition.y;
+        gl_Position.x = gl_Position.x + sin(0.001 * worldTime * ypos) * 0.15;
+        
+    }
 }

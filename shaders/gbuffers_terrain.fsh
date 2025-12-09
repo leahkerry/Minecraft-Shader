@@ -28,8 +28,8 @@ const bool shadowtex1Nearest = true;
 #include "/distort.glsl"
 
 void main() {
-	// vec4 color = texture2D(texture, texcoord) * glcolor;
-	vec4 color = glcolor;
+	vec4 color = texture2D(texture, texcoord) * glcolor;
+	// vec4 color = glcolor;
 	vec2 lm = lmcoord; // light map: for shadows, torches, time of day
     // lm.x = torch
     //lm.y = sky light
@@ -74,14 +74,16 @@ void main() {
 	    color *= texture2D(lightmap, lm);
     #endif 
     #if LIGHITNG_STYLE == 1 
-        vec3 torch_color = vec3(1., 1., 0.);
-        // color *= texture2D(lightmap, lm); // black, white, colored
-        vec3 torch_color = vec3(1., 1., 0.);
-        vec3 sky_color = vec3(0., 0., 1.);
+        float light = dot(normalize(shadowPos), normalize(normals_face));
+        color.rgb = color.rgb + light; 
+        // vec3 torch_color = vec3(1., 1., 0.);
+        // // color *= texture2D(lightmap, lm); // black, white, colored
+        // vec3 torch_color = vec3(1., 1., 0.);
+        // vec3 sky_color = vec3(0., 0., 1.);
         // if (sunAngle >= 0.5) {
         //     sky_color = 0.0;
         // }
-        color.rgb = color.rgb * (torch_color * lm.x + sky_color * lm.y)  ;  // x is torch value of lightmap
+        // color.rgb = color.rgb * (torch_color * lm.x + sky_color * lm.y)  ;  // x is torch value of lightmap
     #endif 
 /* DRAWBUFFERS:0 */
 	gl_FragData[0] = color; //gcolor

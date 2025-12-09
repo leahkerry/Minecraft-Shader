@@ -8,11 +8,22 @@ uniform sampler2D shadowcolor0;
 uniform sampler2D shadowtex0;
 uniform sampler2D shadowtex1;
 uniform sampler2D texture;
+uniform int entityId; 
+uniform int heldItemId;
+uniform vec2 eyeBrightness;
+uniform vec3 sunPosition;
+uniform vec3 moonPosition;
+uniform float worldTime;
+uniform vec3 shadowLightPosition;
 
 varying vec2 lmcoord;
 varying vec2 texcoord;
 varying vec4 glcolor;
 varying vec4 shadowPos;
+varying vec2 vaUV2_v1; // TODO: remove later
+varying vec3 vNormal;
+varying vec3 vMoonPosition_v3;
+varying vec3 viewPos_v3;
 
 //fix artifacts when colored shadows are enabled
 const bool shadowcolor0Nearest = true;
@@ -57,6 +68,46 @@ void main() {
 	}
 	color *= texture2D(lightmap, lm);
 
+	// color the entity 
+	if (entityId == 1002) {
+		color.rgb = vec3(1.0, 0.0, 1.0);
+	}
+
+	// if (heldItemId == 1002) {
+	// 	color.rgb = vec3(0.0, 0.0, 0.1);
+	// }
+
+	vec4 albedo = texture2D(texture, texcoord) * glcolor;
+
+	float maxc = max(albedo.r, max(albedo.g, albedo.b));
+	float minc = min(albedo.r, min(albedo.g, albedo.b));
+	float sat  = maxc - minc;
+
+	bool isDiamondArmor =
+		albedo.g > 0.6 &&
+		albedo.b > 0.6 &&
+		albedo.r < 0.5 &&
+		sat > 0.15;
+		
+
+	if (isDiamondArmor) {
+		vec3 baseColor = albedo.rgb * 0.7;
+		vec3 skylightDir = normalize(shadowLightPosition);
+
+		float lightDot = dot(skylightDir, vNormal);
+		float specular = pow(lightDot, 16.0);
+		float time = mod(gl_FragCoord.x + gl_FragCoord.y + worldTime, 1000.0) * 0.01;		
+		float animSpec = sin(time * 4.0) * 0.2;
+		// float glow = sin(time * 2.0) * 0.5 + 0.5;
+
+		vec3 metallic = baseColor * (
+			lightDot + specular + animSpec
+		);
+
+		color.rgb = mix(albedo.rgb, metallic, 0.6);
+	}
+
 /* DRAWBUFFERS:0 */
 	gl_FragData[0] = color; //gcolor
 }
+

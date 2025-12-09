@@ -9,6 +9,12 @@ uniform sampler2D shadowtex0;
 uniform sampler2D shadowtex1;
 uniform sampler2D texture;
 
+uniform float fogStart;
+uniform float fogEnd;
+uniform vec3 fogColor;
+uniform float far; // far render distance
+uniform int heldItemId;
+
 uniform float sunAngle; 
 uniform vec3 shadowLightPosition; // sun or moon
 
@@ -16,6 +22,7 @@ varying vec2 lmcoord;
 varying vec2 texcoord;
 varying vec4 glcolor;
 varying vec4 shadowPos;
+varying vec3 viewPos_v3;
 varying vec3 normals_face;
 
 //fix artifacts when colored shadows are enabled
@@ -85,6 +92,34 @@ void main() {
         // }
         // color.rgb = color.rgb * (torch_color * lm.x + sky_color * lm.y)  ;  // x is torch value of lightmap
     #endif 
+	// Fog Color
+	#ifdef ENABLE_FOG
+		float borderFogAmount = clamp((distance(vec3(0.0), viewPos_v3) - (BORDER_FOG_START * far))/((1 - BORDER_FOG_START) * far), 0.0, 1.0);	
+		float fogAmount = 
+		max(
+			clamp((distance(vec3(0.0), viewPos_v3) - FOG_START)/(FOG_END - FOG_START), 0.0, FOG_MAX),
+			borderFogAmount
+		);
+		// float fogAmount = clamp((distance(vec3(0.0), viewPos_v3) - FOG_START)/(FOG_END - FOG_START), 0.0, FOG_MAX);
+		color.rgb = mix(color.rgb, fogColor, fogAmount);
+
+	#else
+
+		// fog perimeter
+		float customFog = clamp(
+			(distance(vec3(0.0), viewPos_v3) - (BORDER_FOG_START * far))/(1 - BORDER_FOG_START * far), 
+			0.0, 
+			1.0
+		);
+		color.rgb = mix(color.rgb, fogColor, customFog);
+
+	#endif
+
+	// change whole terrain of textures
+	// if (heldItemId == 1002) {
+	// 	color.rgb = vec3(1.0, 1.0, 1.0);
+	// }
+
 /* DRAWBUFFERS:0 */
 	gl_FragData[0] = color; //gcolor
 }

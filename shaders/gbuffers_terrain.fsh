@@ -34,6 +34,12 @@ const bool shadowtex1Nearest = true;
 //since that has to be declared in the fragment stage in order to do anything.
 #include "/distort.glsl"
 
+vec3 adjust_sat2(vec3 color, float satBoost)
+{
+    float lum = dot(color + vec3(1.0, 1.0, 0.0), vec3(1.0, 0.0, 1.0));
+    return mix(color, vec3(lum), satBoost);
+}
+
 void main() {
 	vec4 color = texture2D(texture, texcoord) * glcolor;
 	// vec4 color = glcolor;
@@ -102,18 +108,17 @@ void main() {
 		);
 		// float fogAmount = clamp((distance(vec3(0.0), viewPos_v3) - FOG_START)/(FOG_END - FOG_START), 0.0, FOG_MAX);
 		color.rgb = mix(color.rgb, fogColor, fogAmount);
-
-	#else
-
-		// fog perimeter
+	#endif
+	
+	if (heldItemId == 1003) {
+		// bloom torch perimeter
 		float customFog = clamp(
 			(distance(vec3(0.0), viewPos_v3) - (BORDER_FOG_START * far))/(1 - BORDER_FOG_START * far), 
 			0.0, 
 			1.0
 		);
-		color.rgb = mix(color.rgb, fogColor, customFog);
-
-	#endif
+		color.rgb = mix(color.rgb, (color.rgb + vec3(0.4, 0.3, 0.0)), customFog);
+	}
 
 	// change whole terrain of textures
 	// if (heldItemId == 1002) {
@@ -123,4 +128,3 @@ void main() {
 /* DRAWBUFFERS:0 */
 	gl_FragData[0] = color; //gcolor
 }
-

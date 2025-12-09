@@ -64,7 +64,9 @@ void increaseTemp()
 vec3 torchHandLight(vec3 color){
     vec2 screenCenter = vec2(0.5, 0.5);
     float dist = distance(texcoord, screenCenter);
-    float falloff = max(0.0, 1.0 - (dist * 2.0)); // Adjust multiplier for range
+    
+    // higher the dist multiplier = smaller the focused circle of light
+    float falloff = max(0.0, 1.0 - (dist * 3.0)); 
     
     vec3 torchLight = vec3(1.0, 0.6, 0.2) * falloff * 0.3;
     color += torchLight;
@@ -76,7 +78,7 @@ void main()
     vec3 color = texture2D(DRAW_SHADOW_MAP, texcoord).rgb;
     // vec3 red = vec3(texcoord.x,0.0,texcoord.y);
     float amount = 0.5;
-    color = ditter_effect(color, texcoord);
+    // color = ditter_effect(color, texcoord);
     color = adjust_sat(color, satBoost);
     // color = mix_over_time(color);
     // color = make_red(color, amount);

@@ -64,7 +64,9 @@ void main() {
 	// }
 
 	if (heldItemId == 1003) {
-		gl_FragData[1] = vec4(1.0); 
+		// TODO: fix the saturation of torch?
+		// TODO: Add smoke particle effect? 
+		color.rgb += vec3(0.2);
 	}
 
 /* DRAWBUFFERS:0 */

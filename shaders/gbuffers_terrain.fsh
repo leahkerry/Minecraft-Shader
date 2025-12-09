@@ -15,6 +15,8 @@ uniform vec3 fogColor;
 uniform float far; // far render distance
 uniform int heldItemId;
 
+uniform vec3 skyColor;
+
 uniform float sunAngle; 
 uniform vec3 shadowLightPosition; // sun or moon
 
@@ -41,6 +43,11 @@ vec3 adjust_sat2(vec3 color, float satBoost)
 }
 
 void main() {
+    vec3 new_skyColor = skyColor;
+    #if PURPLE_SKY == 1
+        new_skyColor = vec3(0.60, 0.45, 0.83);
+    #endif
+
 	vec4 color = texture2D(texture, texcoord) * glcolor;
 	// vec4 color = glcolor;
 	vec2 lm = lmcoord; // light map: for shadows, torches, time of day
@@ -107,7 +114,12 @@ void main() {
 			borderFogAmount
 		);
 		// float fogAmount = clamp((distance(vec3(0.0), viewPos_v3) - FOG_START)/(FOG_END - FOG_START), 0.0, FOG_MAX);
-		color.rgb = mix(color.rgb, fogColor, fogAmount);
+        
+        // Default fog color (from minecraft)
+        color.rgb = mix(color.rgb, fogColor, fogAmount);
+        
+        // Fog color replaced with sky color - buggy
+        // color.rgb = mix(color.rgb, new_skyColor, fogAmount);
 	#endif
 	
 	if (heldItemId == 1003) {

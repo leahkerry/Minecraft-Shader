@@ -68,9 +68,10 @@ void main() {
 	}
 	color *= texture2D(lightmap, lm);
 
-        if (color.g > 0.5) {
-            color.g = 1.0;
-        }
+        // Halle - I added this for fun haha probs not very practical though
+        // if (color.g > 0.5) {
+        //     color.g = 1.0;
+        // }
 
 /* DRAWBUFFERS:0 */
 	gl_FragData[0] = color; //gcolor

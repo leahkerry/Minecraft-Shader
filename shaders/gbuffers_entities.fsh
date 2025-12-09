@@ -8,11 +8,22 @@ uniform sampler2D shadowcolor0;
 uniform sampler2D shadowtex0;
 uniform sampler2D shadowtex1;
 uniform sampler2D texture;
+uniform int entityId; 
+uniform int heldItemId;
+uniform vec2 eyeBrightness;
+uniform vec3 sunPosition;
+uniform vec3 moonPosition;
+uniform int worldTime;
+uniform vec3 shadowLightPosition;
 
 varying vec2 lmcoord;
 varying vec2 texcoord;
 varying vec4 glcolor;
 varying vec4 shadowPos;
+varying vec2 vaUV2_v1; // TODO: remove later
+varying vec3 vNormal;
+varying vec3 vMoonPosition_v3;
+varying vec3 viewPos_v3;
 
 //fix artifacts when colored shadows are enabled
 const bool shadowcolor0Nearest = true;
@@ -63,4 +74,5 @@ void main() {
 
 /* DRAWBUFFERS:0 */
 	gl_FragData[0] = color; //gcolor
+}
 }

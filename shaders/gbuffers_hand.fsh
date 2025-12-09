@@ -8,6 +8,7 @@ uniform sampler2D shadowcolor0;
 uniform sampler2D shadowtex0;
 uniform sampler2D shadowtex1;
 uniform sampler2D texture;
+uniform int heldItemId;
 
 varying vec2 lmcoord;
 varying vec2 texcoord;
@@ -56,6 +57,17 @@ void main() {
 		}
 	}
 	color *= texture2D(lightmap, lm);
+
+	// change color of item in hand
+	// if (heldItemId == 1002) {
+	// 	color.rgb = vec3(1.0, 1.0, 1.0);
+	// }
+
+	if (heldItemId == 1003) {
+		// TODO: fix the saturation of torch?
+		// TODO: Add smoke particle effect? 
+		color.rgb += vec3(0.2);
+	}
 
 /* DRAWBUFFERS:0 */
 	gl_FragData[0] = color; //gcolor

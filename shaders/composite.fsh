@@ -4,11 +4,14 @@
 #include "/settings.glsl"
 
 uniform float frameTimeCounter;
+uniform float satBoost = SATURATION;
 uniform sampler2D gcolor;
 uniform sampler2D shadowcolor0;
 uniform sampler2D shadowtex0;
-
 uniform sampler2D shadowtex1;
+uniform int worldTime;
+uniform int heldItemId;
+uniform vec3 cameraPosition;
 
 varying vec2 texcoord;
 

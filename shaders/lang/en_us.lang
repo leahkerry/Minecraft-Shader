@@ -1,3 +1,4 @@
 option.BLUE_AMOUNT = Blue shift
 option.RED_AMOUNT = Red huez
 option.RED_AMOUNT.comment = make more red
+option.PURPLE_SKY = Make Sky Purple

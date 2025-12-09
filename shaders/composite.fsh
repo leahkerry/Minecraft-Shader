@@ -14,14 +14,20 @@ varying vec2 texcoord;
 
 vec3 make_red(in vec3 color, in float amount) {
     color = mix(color, vec3(1.0,0.0,0.0), amount);
-    return color; 
+    return color;
 }
 
 void main() {
 	vec3 color = texture2D(DRAW_SHADOW_MAP, texcoord).rgb;
+
+    // Red color test:
     // vec3 red = vec3(texcoord.x,0.0,texcoord.y);
-    float amount = 0.5;
+    // float amount = 0.5;
     // color = make_red(color, amount);
+    
+    // Attempting dithering:
+    // color = floor(color + 1.0) / 1.0;
+
     // draw buffer 0 is main one at end
     /* DRAWBUFFERS:0 */
     gl_FragData[0] = vec4(color, 1.0); //gcolor

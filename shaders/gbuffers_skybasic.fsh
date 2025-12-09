@@ -1,8 +1,5 @@
 #version 120
-<<<<<<< HEAD
 #include "/settings.glsl"
-=======
->>>>>>> 5687c4b3353ba09ed5c7047f3d077651f28aa719
 
 uniform float viewHeight;
 uniform float viewWidth;
@@ -21,13 +18,9 @@ float fogify(float x, float w) {
 
 vec3 calcSkyColor(vec3 pos) {
 	float upDot = dot(pos, gbufferModelView[1].xyz); //not much, what's up with you?
-<<<<<<< HEAD
     vec3 skyColor = mix(skyColor, fogColor, fogify(max(upDot, 0.0), 0.25)); 
     // skyColor = mix(skyColor, vec3(1.,0.,1.), 0.4);
 	return skyColor; 
-=======
-	return mix(skyColor, fogColor, fogify(max(upDot, 0.0), 0.25));
->>>>>>> 5687c4b3353ba09ed5c7047f3d077651f28aa719
 }
 
 void main() {

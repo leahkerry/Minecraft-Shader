@@ -8,16 +8,20 @@ uniform sampler2D shadowcolor0;
 uniform sampler2D shadowtex0;
 uniform sampler2D shadowtex1;
 uniform sampler2D texture;
+uniform int heldItemId;
+// uniform int entityId;
 
 varying vec2 lmcoord;
 varying vec2 texcoord;
 varying vec4 glcolor;
 varying vec3 shadowPos; //normals don't exist for particles
 
+
 //fix artifacts when colored shadows are enabled
 const bool shadowcolor0Nearest = true;
 const bool shadowtex0Nearest = true;
 const bool shadowtex1Nearest = true;
+const float EPSILON = 0.01;
 
 void main() {
 	vec4 color = texture2D(texture, texcoord) * glcolor;
@@ -55,6 +59,12 @@ void main() {
 	}
 	color *= texture2D(lightmap, lm);
 
-/* DRAWBUFFERS:0 */
+	// change color of block breaking effect + torch effect
+	// if (heldItemId == 1002) {
+	// 	color.rgb = vec3(1.0, 1.0, 1.0);
+	// }
+
+
+	/* DRAWBUFFERS:0 */
 	gl_FragData[0] = color; //gcolor
 }

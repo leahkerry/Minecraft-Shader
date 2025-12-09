@@ -13,7 +13,7 @@ uniform int heldItemId;
 uniform vec2 eyeBrightness;
 uniform vec3 sunPosition;
 uniform vec3 moonPosition;
-uniform float worldTime;
+uniform int worldTime;
 uniform vec3 shadowLightPosition;
 
 varying vec2 lmcoord;

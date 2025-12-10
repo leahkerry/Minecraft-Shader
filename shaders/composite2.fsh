@@ -92,9 +92,18 @@ void main() {
 
         // making holes and density (change number of clouds)
         clouds.a = clamp((clouds.a - (0.3 * (1.0 - rainStrength))) * 4.0, 0.0, 2.0);
+        
+        float r_cloud = 1.0;
+        float g_cloud = 1.0;
+        float b_cloud = 1.0;
 
+        #if CLOUD_COLOR_CHANGE == 1
+            r_cloud = sin(0.5 * frameTimeCounter);
+            g_cloud = cos(0.1 * frameTimeCounter);
+            b_cloud = sin(0.2 * frameTimeCounter);
+        #endif
         // white clouds
-        clouds.rgb = vec3(1.0); // white clouds
+        clouds.rgb = vec3(r_cloud, g_cloud, b_cloud); // white clouds
 
         // shading
         clouds.rgb -= clamp((clouds.a - 0.5) * 0.1, 0.0, 0.25);

@@ -1,7 +1,7 @@
 #define BLUE_AMOUNT 0.0
 #define RED_AMOUNT 0.0 //[0.0 0.25 0.75 0.90]
 #define BLACK_SKY 0 //[0 1]
-#define PURPLE_SKY 0 //[0 1]
+#define PURPLE_SKY 1 //[0 1]
 #define SCARY_SUN 1 //[0 1]
 #define PINK_CLOUDS 0 //[0 1]
 //Increase this if you get shadow acne. Decrease this if you get peter panning.
@@ -16,6 +16,7 @@
 #define SATURATION 1.5 // [0.0 0.25 0.5 0.75 1.0 1.25 1.5 1.75 2.0]
 #define LIGHTING_STYLE 0 //[0 1]
 
-#define CLOUD_STYLE 0 //[0, 1]
+#define CLOUD_STYLE 1 //[0, 1]
 #define CLOUD_FOG 0.5 // [0.0 0.25 0.5 0.75 1.0]
 #define CLOUD_SPEED 0.5 // [0.0 0.25 0.5. 0.75 1.0 1.2 1.5 1.7 2.0]
+#define CLOUD_COLOR_CHANGE 0 // [0, 1]

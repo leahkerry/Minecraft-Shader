@@ -15,3 +15,5 @@
 
 #define SATURATION 1.5 // [0.0 0.25 0.5 0.75 1.0 1.25 1.5 1.75 2.0]
 #define LIGHTING_STYLE 0 //[0 1]
+
+#define CLOUD_STYLE 0 //[0, 1]

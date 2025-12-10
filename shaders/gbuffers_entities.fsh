@@ -15,6 +15,7 @@ uniform vec3 sunPosition;
 uniform vec3 moonPosition;
 uniform int worldTime;
 uniform vec3 shadowLightPosition;
+uniform int currentRenderedItemId;
 
 varying vec2 lmcoord;
 varying vec2 texcoord;
@@ -71,40 +72,23 @@ void main() {
 	// color the entity 
 	if (entityId == 1002) {
 		color.rgb = vec3(1.0, 0.0, 1.0);
-	}
+	}		
 
-	// if (heldItemId == 1002) {
-	// 	color.rgb = vec3(0.0, 0.0, 0.1);
-	// }
-
-	vec4 albedo = texture2D(texture, texcoord) * glcolor;
-
-	float maxc = max(albedo.r, max(albedo.g, albedo.b));
-	float minc = min(albedo.r, min(albedo.g, albedo.b));
-	float sat  = maxc - minc;
-
-	bool isDiamondArmor =
-		albedo.g > 0.6 &&
-		albedo.b > 0.6 &&
-		albedo.r < 0.5 &&
-		sat > 0.15;
-		
-
-	if (isDiamondArmor) {
-		vec3 baseColor = albedo.rgb * 0.7;
+	if (currentRenderedItemId == 1002) {
+		vec3 baseColor = color.rgb * 0.6;
 		vec3 skylightDir = normalize(shadowLightPosition);
 
 		float lightDot = dot(skylightDir, vNormal);
 		float specular = pow(lightDot, 16.0);
 		float time = mod(gl_FragCoord.x + gl_FragCoord.y + worldTime, 1000.0) * 0.01;		
-		float animSpec = sin(time * 4.0) * 0.2;
+		float animSpec = sin(time * 5.0) * 0.2;
 		// float glow = sin(time * 2.0) * 0.5 + 0.5;
 
 		vec3 metallic = baseColor * (
 			lightDot + specular + animSpec
 		);
 
-		color.rgb = mix(albedo.rgb, metallic, 0.6);
+		color.rgb = mix(color.rgb, metallic, 0.5);
 	}
 
 /* DRAWBUFFERS:0 */

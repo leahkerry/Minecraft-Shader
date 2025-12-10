@@ -14,8 +14,6 @@ varying vec3 shadowPos; // normals don't exist for particles
 
 // Reference: https://shaders.properties/current/reference/miscellaneous/item_properties/
 attribute vec4 mc_Entity; // for blocks
-// uniform int heldItemId;
-// uniform uint currentRenderedItemId; // for items
 
 #include "/distort.glsl"
 

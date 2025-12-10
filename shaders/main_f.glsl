@@ -141,7 +141,6 @@ void main() {
         color.rgb *= 1. - porosity * actual_wetness*0.7;
         vec3 ray_dir = normalize(viewPos_v3.xyz);
 
-        float FRESNEL = .5;
         float fresnel = pow(clamp(1. + dot(normals_texture.xyz, ray_dir), 0., 1.), 2.) * FRESNEL;
         // float fresnel = 1.; // TODO: fix
         float reflective_strength = f0 + (1. - f0) * fresnel * smoothness;
@@ -197,5 +196,14 @@ void main() {
     #endif
 
 /* DRAWBUFFERS:0 */
-	gl_FragData[0] = color; //gcolor
+/* RENDERTARGETS: 0,2,3 */
+    #if HIGH_QUALITY_NORMALS == 1
+		/*
+			const int colortex2Format = RGBA16F;
+		*/
+	#endif
+    gl_FragData[0] = color; //gcolor
+	gl_FragData[1] = vec4(normals_texture.xyz*.5+.5, 1.); 
+	gl_FragData[2] = vec4(smoothness,reflective_strength,(abs(material_id-10006.) < .5?1.:0.) ,f0); 
+
 }

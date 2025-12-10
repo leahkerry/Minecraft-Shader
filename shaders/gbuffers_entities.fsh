@@ -15,6 +15,7 @@ uniform vec3 sunPosition;
 uniform vec3 moonPosition;
 uniform int worldTime;
 uniform vec3 shadowLightPosition;
+uniform int currentRenderedItemId;
 
 varying vec2 lmcoord;
 varying vec2 texcoord;

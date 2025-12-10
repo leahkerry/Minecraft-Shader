@@ -18,7 +18,7 @@ float fogify(float x, float w) {
 
 vec3 calcSkyColor(vec3 pos, vec3 custom_skyColor) {
 	float upDot = dot(pos, gbufferModelView[1].xyz); //not much, what's up with you?
-    vec3 skyColor = mix(custom_skyColor, fogColor, fogify(max(upDot, 0.0), 0.25)); 
+    vec3 skyColor = mix(skyColor * custom_skyColor, fogColor, fogify(max(upDot, 0.0), 0.25)); 
 
 	return skyColor;
 }
@@ -31,7 +31,8 @@ void main() {
     #endif
 
     #if PURPLE_SKY == 1
-        color = vec3(0.60, 0.45, 0.83);
+        // color = vec3(0.60, 0.45, 0.83);
+        color = vec3(1.0, 0.45, 0.9);
     #endif
 
     if (starData.a > 0.5) {

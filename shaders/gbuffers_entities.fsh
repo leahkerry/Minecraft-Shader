@@ -3,6 +3,8 @@
 #define COLORED_SHADOWS 1 //0: Stained glass will cast ordinary shadows. 1: Stained glass will cast colored shadows. 2: Stained glass will not cast any shadows. [0 1 2]
 #define SHADOW_BRIGHTNESS 0.75 //Light levels are multiplied by this number when the surface is in shadows [0.00 0.05 0.10 0.15 0.20 0.25 0.30 0.35 0.40 0.45 0.50 0.55 0.60 0.65 0.70 0.75 0.80 0.85 0.90 0.95 1.00]
 
+#include "/settings.glsl"
+
 uniform sampler2D lightmap;
 uniform sampler2D shadowcolor0;
 uniform sampler2D shadowtex0;
@@ -16,6 +18,8 @@ uniform vec3 moonPosition;
 uniform int worldTime;
 uniform vec3 shadowLightPosition;
 uniform int currentRenderedItemId;
+uniform sampler2D depthtex0;
+uniform float aspectRatio;
 
 varying vec2 lmcoord;
 varying vec2 texcoord;
@@ -30,6 +34,24 @@ varying vec3 viewPos_v3;
 const bool shadowcolor0Nearest = true;
 const bool shadowtex0Nearest = true;
 const bool shadowtex1Nearest = true;
+
+
+float laplacian(sampler2D depthTex, vec2 uv, float size) {
+    float center = texture(depthTex, uv).r * 8.0;
+    
+    float sum = center;
+    sum -= texture(depthTex, uv + vec2(size, 0.0)).r;
+    sum -= texture(depthTex, uv + vec2(-size, 0.0)).r;
+    sum -= texture(depthTex, uv + vec2(0.0, size)).r;
+    sum -= texture(depthTex, uv + vec2(0.0, -size)).r;
+    sum -= texture(depthTex, uv + vec2(size, size)).r;
+    sum -= texture(depthTex, uv + vec2(-size, size)).r;
+    sum -= texture(depthTex, uv + vec2(size, -size)).r;
+    sum -= texture(depthTex, uv + vec2(-size, -size)).r;
+
+    return abs(sum);
+}
+
 
 void main() {
 	vec4 color = texture2D(texture, texcoord) * glcolor;
@@ -75,7 +97,7 @@ void main() {
 	}		
 
 	if (currentRenderedItemId == 1002) {
-		vec3 baseColor = color.rgb * 0.6;
+		vec3 baseColor = color.rgb * 0.8;
 		vec3 skylightDir = normalize(shadowLightPosition);
 
 		float lightDot = dot(skylightDir, vNormal);
@@ -89,6 +111,13 @@ void main() {
 		);
 
 		color.rgb = mix(color.rgb, metallic, 0.5);
+
+		float texelSize = 1 / aspectRatio;
+		float edge = laplacian(depthtex0, texcoord, texelSize);
+    
+		if (edge > EDGE_THRESHOLD) {
+			color.rgb = mix(color.rgb, vec3(0.0), 0.8); // darken edges
+		}
 	}
 
 /* DRAWBUFFERS:0 */

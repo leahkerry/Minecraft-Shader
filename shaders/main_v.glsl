@@ -99,5 +99,14 @@ void main()
         gl_Position.y = gl_Position.y + sin(0.001 * worldTime * xpos) * 0.15;
         
     }
+    // exploding cows
+    if (entityId == 10020) {
+        // get position in world
+        // move along normal
+        // convert to cam sspace
+        gl_Position.xyz = gl_Position.xyz + 0.2 * (sin(worldTime * 0.1) * 0.5 + 0.5) * 1. * normals_face;
+        // gl_Position
+
+    }
     #endif
 }

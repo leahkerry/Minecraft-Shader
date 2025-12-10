@@ -9,6 +9,7 @@ uniform sampler2D shadowtex1;
 uniform sampler2D texture;
 uniform sampler2D normals;
 uniform sampler2D specular;
+uniform int entityId; 
 
 uniform float fogStart;
 uniform float fogEnd;
@@ -194,7 +195,11 @@ void main() {
 	// }
     
     #if IS_ENTITY == 1
-        color.rgb *= vec3(1., 0., 1.);
+        // color.rgb *= vec3(1., 0., 1.);
+        // if (entityId == 10020) {
+        //     color.rgb = normals_face;
+        // }
+        // color.rgb = normals_face;
     #endif
 
 /* DRAWBUFFERS:0 */

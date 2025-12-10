@@ -32,7 +32,7 @@ void main() {
 
     #if PURPLE_SKY == 1
         // color = vec3(0.60, 0.45, 0.83);
-        color = vec3(1.0, 0.45, 0.9);
+        color = vec3(0.9, 0.45, 0.8);
     #endif
 
     if (starData.a > 0.5) {

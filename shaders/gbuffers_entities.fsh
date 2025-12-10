@@ -68,10 +68,32 @@ void main() {
 	}
 	color *= texture2D(lightmap, lm);
 
-        // Halle - I added this for fun haha probs not very practical though
-        // if (color.g > 0.5) {
-        //     color.g = 1.0;
-        // }
+    // Halle - I added this for fun haha probs not very practical though
+    // if (color.g > 0.5) {
+    //     color.g = 1.0;
+    // }
+
+    // color the entity 
+    if (entityId == 1002) {
+            color.rgb = vec3(1.0, 0.0, 1.0);
+    }		
+
+    if (currentRenderedItemId == 1002) {
+            vec3 baseColor = color.rgb * 0.6;
+            vec3 skylightDir = normalize(shadowLightPosition);
+
+            float lightDot = dot(skylightDir, vNormal);
+            float specular = pow(lightDot, 16.0);
+            float time = mod(gl_FragCoord.x + gl_FragCoord.y + worldTime, 1000.0) * 0.01;		
+            float animSpec = sin(time * 5.0) * 0.2;
+            // float glow = sin(time * 2.0) * 0.5 + 0.5;
+
+            vec3 metallic = baseColor * (
+                    lightDot + specular + animSpec
+            );
+
+            color.rgb = mix(color.rgb, metallic, 0.5);
+    }
 
 /* DRAWBUFFERS:0 */
 	gl_FragData[0] = color; //gcolor

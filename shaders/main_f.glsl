@@ -18,6 +18,8 @@ uniform int heldItemId;
 uniform float wetness;
 uniform float sunAngle; 
 uniform vec3 shadowLightPosition; // sun or moon
+uniform int currentRenderedItemId;
+uniform int worldTime;
 
 varying vec2 lmcoord;
 varying vec2 texcoord;
@@ -188,17 +190,30 @@ void main() {
 		color.rgb = mix(color.rgb, (color.rgb + vec3(0.4, 0.3, 0.0)), customFog);
 	}
 
-	// change whole terrain of textures
-	// if (heldItemId == 1002) {
-	// 	color.rgb = vec3(1.0, 1.0, 1.0);
-	// }
-    
-    #if IS_ENTITY == 1
-        color.rgb *= vec3(1., 0., 1.);
-    #endif
+    // #if IS_ENTITY == 1
+    //     color.rgb *= vec3(1., 1., 1.);
+    // #endif
 
-/* DRAWBUFFERS:0 */
-/* RENDERTARGETS: 0,2,3 */
+    if (currentRenderedItemId == 1002) {
+		vec3 baseColor = color.rgb * 0.5;
+		vec3 skylightDir = normalize(shadowLightPosition);
+
+		float lightDot = dot(skylightDir, normals_face);
+		float specular = pow(lightDot, 16.0);
+		float time = mod(gl_FragCoord.y + gl_FragCoord.y + worldTime, 1000.0) * 0.01;		
+		// float animSpec = sin(time * 5.0) * 0.2;
+		float glow = sin(time * 2.0) * 0.5 + 0.5;
+
+		vec3 metallic = baseColor * (
+			lightDot + specular + 1.0
+		);
+
+		color.rgb = mix(color.rgb, metallic, 0.7);
+	}
+
+
+    /* DRAWBUFFERS:0 */
+    /* RENDERTARGETS: 0,2,3 */
     #if HIGH_QUALITY_NORMALS == 1
 		/*
 			const int colortex2Format = RGBA16F;

@@ -34,7 +34,7 @@ void main() {
 		color = calcSkyColor(normalize(pos.xyz));
 	}
 
-    #if BLACK_SKY == 1
+    #ifdef BLACK_SKY
         color = vec3(0.0);
     #endif
 

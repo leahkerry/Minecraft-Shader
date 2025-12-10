@@ -109,23 +109,14 @@ void main() {
 		
 		normals_texture.xyz = normalize( tbn_matrix * normals_texture.xyz );
 
-        // save curr color
+        float porosity = 0.;
         vec3 albedo = color.rgb; 
-
-        //decode pbr texture
-        float f0 = specular_texture.g;
-        float f0 = 0.;
-        bool metal = specular_texture.g>=229.5;
-        
-        //red channel
-        float perceptualSmoothness = specular_texture.r;
-        float roughness = pow(1.0 - perceptualSmoothness, 2.0);
-        float smoothness = 1.-roughness;
-        //blue channnel
-        float porosity = specular_texture.b <64.5/255. ? specular_texture.b/64. : 0.;
-        float sss = specular_texture.b >=64.5/255. ? (specular_texture.b-64.) / (255.-64.) : 0.;
-        //a channel
-        float emmisive = specular_texture.a >=254.5/255. ? 0. : specular_texture.a;
+        float sss = 0.;
+        float roughness = 0.;
+        float f0 = 1.;
+        float smoothness = 0.;
+        bool metal = false;
+        float emmisive = 0.;
 
         //ipbr
         if( abs(material_id-10003. ) < EPSILON) //porous
@@ -134,7 +125,7 @@ void main() {
         }
         if(abs(material_id-10002.) < EPSILON) //grass
         {
-            sss = 1.;
+            sss = 0.;
         }
         if(abs(material_id-10006.) < EPSILON) //water
         {
@@ -144,7 +135,6 @@ void main() {
 
         // porisity effects
         float actual_wetness = wetness * (lmcoord.y > .96?1.:0.);
-        // float actual_wetness = 1.;
         float wet_shine = clamp(actual_wetness - 0.5 * porosity, 0., 1.);
         f0 += (1.-f0) * wet_shine * 0.7;
         smoothness += (1. - smoothness) * wet_shine;

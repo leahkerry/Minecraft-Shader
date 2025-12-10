@@ -14,6 +14,7 @@ uniform float near;
 uniform float far; 
 uniform mat4 gbufferProjection;
 uniform mat4 gbufferProjectionInverse;
+uniform int worldTime; 
 
 /*
 const bool colortex0MipmapEnabled = true;
@@ -71,7 +72,9 @@ void main()
         f = f0 + (1 - f0) * f;
 
         //keep ray position seperate from starting position
+        pos.x = pos.x + 0.05 * pos.x  * sin(worldTime * 0.01 * pos.y + pos.z * 0.0001 * worldTime);
 		vec3 raypos = pos;
+        
 
         // flags for raytacing 
         bool hit = false;
@@ -127,7 +130,7 @@ void main()
             f *= clamp(
                     min (
                         (1. - abs(raypos.x - 0.5) * 2.) * 5. , 
-                        (1. - abs(raypos.y - 0.5) * 2.) * 5.
+                        (1. - abs(raypos.y - 0.5) * 2.) * 1.
                     ), 
                     0., 
                     1.
@@ -136,18 +139,15 @@ void main()
 			float raylod = 8.*(1.-smoothness);
             
             //sample reflection from screen
-			vec3 reflection = textureLod(colortex0, raypos.xy,raylod).rgb;	
-
+			vec3 reflection = textureLod(colortex0, raypos.xy, raylod).rgb;	
+            // reflection += sin(worldTime);
             //apply metal tint
 			// if(f0> 230./255.) reflection*= color.rgb,vec3(2.);
 			// if(f0> 230./255.) reflection *= color;
 
             // blend onto screen
-            // color.rgb = color.rgb + color.rgb * reflection * f;
-            // color.rgb = mix(color.rgb,reflection,f);
-            // color.rgb = mix(color.rgb,reflection,0.2);
-            color.rgb = color.rgb + f * (color * reflection);
-            // color.rgb = reflection;
+            color.rgb = mix(color.rgb,reflection,f * 0.85);
+
         }
         
 

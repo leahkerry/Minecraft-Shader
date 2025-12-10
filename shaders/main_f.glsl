@@ -7,13 +7,15 @@ uniform sampler2D shadowcolor0;
 uniform sampler2D shadowtex0;
 uniform sampler2D shadowtex1;
 uniform sampler2D texture;
+uniform sampler2D normals;
+uniform sampler2D specular;
 
 uniform float fogStart;
 uniform float fogEnd;
 uniform vec3 fogColor;
 uniform float far; // far render distance
 uniform int heldItemId;
-
+uniform float wetness;
 uniform float sunAngle; 
 uniform vec3 shadowLightPosition; // sun or moon
 
@@ -23,6 +25,8 @@ varying vec4 glcolor;
 varying vec4 shadowPos;
 varying vec3 viewPos_v3;
 varying vec3 normals_face;
+varying vec4 tangent_face;
+varying float material_id;
 
 //fix artifacts when colored shadows are enabled
 const bool shadowcolor0Nearest = true;
@@ -41,10 +45,11 @@ vec3 adjust_sat2(vec3 color, float satBoost)
 
 void main() {
 	vec4 color = texture2D(texture, texcoord) * glcolor;
-	// vec4 color = glcolor;
+	vec4 specular_texture = texture2D(specular, texcoord);
+
 	vec2 lm = lmcoord; // light map: for shadows, torches, time of day
-    // lm.x = torch
-    //lm.y = sky light
+    
+    float ao_texture;
 
     // applies darkness, night, shadow
     #if LIGHTING_STYLE == 0
@@ -85,18 +90,91 @@ void main() {
 
 	    color *= texture2D(lightmap, lm);
     #endif 
+    // Lighting style 1: no shadows
     #if LIGHITNG_STYLE == 1 
         float light = dot(normalize(shadowPos), normalize(normals_face));
         color.rgb = color.rgb + light; 
-        // vec3 torch_color = vec3(1., 1., 0.);
-        // // color *= texture2D(lightmap, lm); // black, white, colored
-        // vec3 torch_color = vec3(1., 1., 0.);
-        // vec3 sky_color = vec3(0., 0., 1.);
-        // if (sunAngle >= 0.5) {
-        //     sky_color = 0.0;
-        // }
-        // color.rgb = color.rgb * (torch_color * lm.x + sky_color * lm.y)  ;  // x is torch value of lightmap
     #endif 
+
+
+    // PBR lighting effects
+    #ifdef ENABLE_PBR
+        vec3 bitangent = cross(tangent_face.xyz, normals_face.xyz) * tangent_face.w;
+        mat3 tbn_matrix = mat3(tangent_face.xyz, bitangent.xyz, normals_face.xyz);
+        vec4 normals_texture = texture2D(normals, texcoord);
+        float texture_ao = normals_texture.b;
+        normals_texture.xy = normals_texture.xy *2.-1.;
+		
+		normals_texture.z = sqrt(1.0-dot(normals_texture.xy, normals_texture.xy)); //Reconstruct Z
+		
+		normals_texture.xyz = normalize( tbn_matrix * normals_texture.xyz );
+
+        // save curr color
+        vec3 albedo = color.rgb; 
+
+        //decode pbr texture
+        float f0 = specular_texture.g;
+        float f0 = 0.;
+        bool metal = specular_texture.g>=229.5;
+        
+        //red channel
+        float perceptualSmoothness = specular_texture.r;
+        float roughness = pow(1.0 - perceptualSmoothness, 2.0);
+        float smoothness = 1.-roughness;
+        //blue channnel
+        float porosity = specular_texture.b <64.5/255. ? specular_texture.b/64. : 0.;
+        float sss = specular_texture.b >=64.5/255. ? (specular_texture.b-64.) / (255.-64.) : 0.;
+        //a channel
+        float emmisive = specular_texture.a >=254.5/255. ? 0. : specular_texture.a;
+
+        //ipbr
+        if( abs(material_id-10003. ) < EPSILON) //porous
+        {
+            porosity = 1.;
+        }
+        if(abs(material_id-10002.) < EPSILON) //grass
+        {
+            sss = 1.;
+        }
+        if(abs(material_id-10006.) < EPSILON) //water
+        {
+            f0 = 0.5;
+            smoothness = 1.;
+        }
+
+        // porisity effects
+        float actual_wetness = wetness * (lmcoord.y > .96?1.:0.);
+        // float actual_wetness = 1.;
+        float wet_shine = clamp(actual_wetness - 0.5 * porosity, 0., 1.);
+        f0 += (1.-f0) * wet_shine * 0.7;
+        smoothness += (1. - smoothness) * wet_shine;
+        color.rgb *= 1. - porosity * actual_wetness*0.7;
+        vec3 ray_dir = normalize(viewPos_v3.xyz);
+
+        float FRESNEL = .5;
+        float fresnel = pow(clamp(1. + dot(normals_texture.xyz, ray_dir), 0., 1.), 2.) * FRESNEL;
+        // float fresnel = 1.; // TODO: fix
+        float reflective_strength = f0 + (1. - f0) * fresnel * smoothness;
+        vec3 sun_dir = normalize(shadowLightPosition);
+        float lightDot = clamp(dot(sun_dir, normals_texture.xyz),0.,1.);
+        color.rgb = color.rgb + color.rgb * lightDot*(1. - reflective_strength);
+
+        // SPECULAR
+        vec3 reflected_ray = reflect(ray_dir, normals_texture.xyz);
+        float sun_reflection = 
+        pow(clamp(dot(reflected_ray, sun_dir), 0., 1.), 1. + 11. * smoothness);
+
+        // limit by face
+        sun_reflection *= clamp(dot(normals_face.xyz, sun_dir) * 100., 0., 1.);
+
+        // only do this for water
+        if (abs(material_id - 10006.) < EPSILON) {
+            color.rgb += reflective_strength * sun_reflection * (metal? albedo:vec3(1.));
+            color.a = color.a >= 1./255. ? min(1., color.a + reflective_strength * sun_reflection) : color.a;
+            color.rgb = clamp(color.rgb + albedo * emmisive, 0., 1.);
+        }
+    #endif 
+
 	// Fog Color
 	#ifdef ENABLE_FOG
 		float borderFogAmount = clamp((distance(vec3(0.0), viewPos_v3) - (BORDER_FOG_START * far))/((1 - BORDER_FOG_START) * far), 0.0, 1.0);	

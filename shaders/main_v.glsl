@@ -1,17 +1,23 @@
 
+#include "/settings.glsl"
+#include "/distort.glsl"
+
 attribute vec4 mc_Entity;
+attribute vec4 at_tangent;
 
 uniform mat4 gbufferModelView;
 uniform mat4 gbufferModelViewInverse;
 uniform mat4 shadowModelView;
 uniform mat4 shadowProjection;
 uniform vec3 shadowLightPosition;
+
 uniform vec3 moonPosition;
 uniform vec2 vaUV2;
 uniform vec3 vaNormal;
 uniform vec3 cameraPosition; 
 uniform int worldTime;
 uniform int entityId; 
+in vec2 mc_midTexCoord; 
 
 varying vec2 lmcoord;
 varying vec2 texcoord;
@@ -22,15 +28,18 @@ varying vec3 vNormal;
 varying vec3 vMoonPosition_v3;
 varying vec3 viewPos_v3;
 varying vec3 normals_face;
+varying vec4 tangent_face;
+varying float material_id;
 
-#include "/distort.glsl"
 
 void main()
 {
+    material_id = mc_Entity.x;
 	texcoord = (gl_TextureMatrix[0] * gl_MultiTexCoord0).xy;
 	lmcoord = (gl_TextureMatrix[1] * gl_MultiTexCoord1).xy;
 	glcolor = gl_Color;
     normals_face = gl_NormalMatrix * gl_Normal;
+    tangent_face = vec4(normalize(gl_NormalMatrix * at_tangent.xyz), at_tangent.w);
 
 	float lightDot = dot(normalize(shadowLightPosition), normalize(gl_NormalMatrix * gl_Normal));
 #ifdef EXCLUDE_FOLIAGE
@@ -79,7 +88,7 @@ void main()
         
     }
     #endif
-    
+
     #if IS_ENTITY == 1
     if (entityId == 10010) {
         float xpos = (gbufferModelViewInverse * viewPos).x;

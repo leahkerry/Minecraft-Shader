@@ -138,7 +138,9 @@ void main() {
         float wet_shine = clamp(actual_wetness - 0.5 * porosity, 0., 1.);
         f0 += (1.-f0) * wet_shine * 0.7;
         smoothness += (1. - smoothness) * wet_shine;
+
         color.rgb *= 1. - porosity * actual_wetness*0.7;
+        
         vec3 ray_dir = normalize(viewPos_v3.xyz);
 
         float fresnel = pow(clamp(1. + dot(normals_texture.xyz, ray_dir), 0., 1.), 2.) * FRESNEL;

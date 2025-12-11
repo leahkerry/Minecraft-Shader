@@ -20,6 +20,7 @@ uniform float sunAngle;
 uniform vec3 shadowLightPosition; // sun or moon
 uniform int currentRenderedItemId;
 uniform int worldTime;
+uniform vec3 skyColor;
 
 varying vec2 lmcoord;
 varying vec2 texcoord;
@@ -46,6 +47,11 @@ vec3 adjust_sat2(vec3 color, float satBoost)
 }
 
 void main() {
+    vec3 new_skyColor = skyColor;
+    #if PURPLE_SKY == 1
+        new_skyColor = vec3(0.60, 0.45, 0.83);
+    #endif
+
 	vec4 color = texture2D(texture, texcoord) * glcolor;
 	vec4 specular_texture = texture2D(specular, texcoord);
 
@@ -180,6 +186,8 @@ void main() {
 		);
 		// float fogAmount = clamp((distance(vec3(0.0), viewPos_v3) - FOG_START)/(FOG_END - FOG_START), 0.0, FOG_MAX);
 		color.rgb = mix(color.rgb, fogColor, fogAmount);
+        // Fog color replaced with sky color - buggy
+        color.rgb = mix(color.rgb, new_skyColor, fogAmount);
 	#endif
 	
 	if (heldItemId == 1003) {
@@ -199,25 +207,21 @@ void main() {
 
     
 
-    /// ----
+    /// ---- general directional lighting
     
     vec3 baseColor = color.rgb * 0.5;
     vec3 skylightDir = normalize(shadowLightPosition);
     float lightDot2 = dot(skylightDir, normals_face);
     float specular = pow(lightDot2, 16.0);
 
-    // float time = mod(gl_FragCoord.y + gl_FragCoord.y + worldTime, 1000.0) * 0.01;		
-    // float animSpec = sin(time * 5.0) * 0.2;
-    // float glow = sin(time * 2.0) * 0.5 + 0.5;
-
     vec3 metallic = baseColor * (
         lightDot2 + specular + 1.0
     );
 
-    color.rgb = mix(color.rgb, metallic, 0.5);
+    color.rgb = mix(color.rgb, metallic, 0.7);
 
     float lightMix = clamp(sin(sunAngle), 0.0, 1.0);
-    color.rgb += texture2D(lightmap, lm).rgb * color.rgb * lm.x * mix(0.3, 0.5, lightMix);
+    color.rgb += texture2D(lightmap, lm).rgb * color.rgb * lm.x * mix(0.3, 0.8, lightMix);
     // ----
 
     /* DRAWBUFFERS:0 */

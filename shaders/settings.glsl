@@ -32,6 +32,8 @@
 #if REFLECTIONS < 1 
 	program.composite4.enabled=false
 #endif
+
+// clouds
 #define CLOUD_STYLE 1 //[0 1 2]
 #define CLOUD_FOG 0.5 // [0.0 0.25 0.5 0.75 1.0]
 #define CLOUD_SPEED 0.5 // [0.0 0.25 0.5. 0.75 1.0 1.2 1.5 1.7 2.0]

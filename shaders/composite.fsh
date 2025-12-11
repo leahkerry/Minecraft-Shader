@@ -1,5 +1,6 @@
 #version 120
 
+#define SHADES 16.0
 #define DRAW_SHADOW_MAP gcolor //Configures which buffer to draw to the screen [gcolor shadowcolor0 shadowtex0 shadowtex1]
 #include "/settings.glsl"
 
@@ -39,12 +40,6 @@ vec3 ditter_effect(in vec3 color, in vec2 texCoord)
 
     // vec3 ditteredColor = step(0.5, color + bayerValue);
     return floor(color * SHADES + ditter) / SHADES;
-}
-
-vec3 mix_over_time(in vec3 color){
-    float pct = abs(sin(worldTime * 0.05));
-    vec4 newColor = mix(colorA, vec4(color, 1.0), pct);
-    return newColor.rgb;
 }
 
 vec3 adjust_sat(vec3 color, float satBoost)
@@ -109,6 +104,8 @@ void main()
     // vec3 red = vec3(texcoord.x,0.0,texcoord.y);
     // float amount = 0.5;
     // color = make_red(color, amount);
+    color.rgb = adjust_sat(color.rgb, satBoost);
+    color.rgb = ditter_effect(color.rgb, texcoord);
     if (heldItemId == 1003) {
         color = torchHandLight(color);
     }

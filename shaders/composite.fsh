@@ -92,14 +92,14 @@ vec3 calculate_bloom(vec3 color) {
 */
 
 vec3 torchHandLight(vec3 color){
-    vec2 screenCenter = vec2(0.5, 0.5);
-    float dist = distance(texcoord, screenCenter);
+    // vec2 screenCenter = vec2(0.5, 0.5);
+    // float dist = distance(texcoord, screenCenter);
     
-    // higher the dist multiplier = smaller the focused circle of light
-    float falloff = max(0.0, 1.0 - (dist * 3.0)); 
+    // // higher the dist multiplier = smaller the focused circle of light
+    // float falloff = max(0.0, 1.0 - (dist * 3.0)); 
     
-    vec3 torchLight = vec3(1.0, 0.6, 0.2) * falloff * 0.3;
-    color += torchLight;
+    // vec3 torchLight = vec3(1.0, 0.6, 0.2) * falloff * 0.3;
+    // color += torchLight;
     return color;
 }
 
@@ -114,7 +114,6 @@ void main()
     // color = make_red(color, amount);
     if (heldItemId == 1003 || abs(material_id - 10008) < EPSILON) {
         color = torchHandLight(color);
-        color = vec3(0.0);
     }
     // draw buffer 0 is main one at end
     /* DRAWBUFFERS:0 */

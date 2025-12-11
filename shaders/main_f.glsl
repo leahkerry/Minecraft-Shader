@@ -188,12 +188,12 @@ void main() {
     {
         // color.rgb = calculate_bloom(color.rgb);
 		// bloom torch perimeter
-		// float customFog = clamp(
-		// 	(distance(vec3(0.0), viewPos_v3) - (BORDER_FOG_START * far))/(1 - BORDER_FOG_START * far), 
-		// 	0.0, 
-		// 	1.0
-		// );
-		// color.rgb = mix(color.rgb, (color.rgb + vec3(0.4, 0.3, 0.0)), 0.85 * customFog);
+		float customFog = clamp(
+			(distance(vec3(0.0), viewPos_v3) - (BORDER_FOG_START * far))/(1 - BORDER_FOG_START * far), 
+			0.0, 
+			1.0
+		);
+		color.rgb = mix(color.rgb, (color.rgb + vec3(0.4, 0.3, 0.0)), 0.85 * customFog);
 	}
     // color.rgb = calculate_bloom(color.rgb);
 

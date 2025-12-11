@@ -15,6 +15,7 @@
 
 #define SATURATION 1.5 // [0.0 0.25 0.5 0.75 1.0 1.25 1.5 1.75 2.0]
 #define LIGHTING_STYLE 2 //[0 1 2]
+#define BACKGROUND_RESOLUTION_DIVIDER 1 //[1 2 4 10]
 
 // reflections
 #define FRESNEL 1.0 //[0.0 0.25 0.5 0.75 1.0]
@@ -23,14 +24,14 @@
 #define SSR_STEPS 10 //[5 10 20 30]
 #define SSR_REFINEMENT_STEPS 5 //[0 1 2 3 4 5 6 7 8 9 10]
 #define REFLECTIONS 1 //[0 1]
-#define BLOOM 1 //[0 1]
-#define BLOOM_STRENGTH 0.75 //[0.0 0.25 0.5 0.75 0.85 1.0]
+#define BLOOM
+#define BLOOM_STRENGTH 0.5 //[0.0 0.25 0.5 0.75 0.85 1.0]
 #define HIGH_QUALITY_NORMALS 1 //[0 1]
 
-// #if BLOOM < 2 
-// 	program.composite3.enabled=false
-//     program.composite2.enabled=false
-// #endif
+#if BLOOM < 2 
+	// program.composite3.enabled=false
+    program.composite2.enabled=false
+#endif
 
 #if REFLECTIONS < 1 
 	program.composite4.enabled=false

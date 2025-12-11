@@ -101,16 +101,16 @@ vec3 sobel_effect(vec3 color) {
 
     // horizontal gaussian smoothing
     mat3 gx = mat3(
+        vec3(-0.5, 0.0, 0.5), 
         vec3(-1.0, 0.0, 1.0), 
-        vec3(-2.0, 0.0, 2.0), 
-        vec3(-1.0, 0.0, 1.0)
+        vec3(-0.5, 0.0, 0.5)
     );
 
     // vertical gaussian smoothing
     mat3 gy = mat3(
-        vec3(-1.0, -2.0, -1.0), 
+        vec3(-0.5, -1.0, -0.5), 
         vec3(0.0, 0.0, 0.0), 
-        vec3(1.0, 2.0, 1.0)
+        vec3(0.5, 1.0, 0.5)
     );
 
     vec3 edgeX = vec3(0.0);
@@ -123,6 +123,8 @@ vec3 sobel_effect(vec3 color) {
             edgeY += sample * gy[i+1][j+1];
         }
     }
+    // edgeX /= 6.;
+    // edgeY /= 6.;
     
     float edgeMagnitude = length(sqrt(edgeX * edgeX + edgeY * edgeY));
     float threshold = 0.8; // between 0 and 1

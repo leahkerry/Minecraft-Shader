@@ -105,8 +105,8 @@ void main() {
 	    color *= texture2D(lightmap, lm);
     #endif 
     // Lighting style 1: no shadows
-    #if LIGHITNG_STYLE == 1 
-        float light = dot(normalize(shadowPos), normalize(normals_face));
+    #if LIGHTING_STYLE == 1 
+        float light = dot(normalize(shadowPos).xyz, normalize(normals_face));
         color.rgb = color.rgb + light; 
     #endif 
 
@@ -191,9 +191,7 @@ void main() {
 			borderFogAmount
 		);
 		// float fogAmount = clamp((distance(vec3(0.0), viewPos_v3) - FOG_START)/(FOG_END - FOG_START), 0.0, FOG_MAX);
-		color.rgb = mix(color.rgb, fogColor, fogAmount);
-        // Fog color replaced with sky color - buggy
-        // color.rgb = mix(color.rgb, new_skyColor, fogAmount);
+		color.rgb = mix(color.rgb, fogColor.rgb, fogAmount);
 	#endif
 	
 	if (heldItemId == 1003 || (abs(material_id-10008. ) < EPSILON)) 

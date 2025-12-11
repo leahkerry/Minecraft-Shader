@@ -13,7 +13,7 @@
 #define FOG_START 10.0 //[10.0 20.0 100.0]
 #define FOG_END 100.0 //[20.0 50.0 100.0 200.0 1000.0]
 #define FOG_MAX 0.5 //[0.0 0.25 0.5 0.75 1.0]
-#define BORDER_FOG_START 0.075 //[0.075 0.08 0.09]
+#define BORDER_FOG_START 0.75 //[0.05 0.75 0.8 0.9]
 
 #define SATURATION 1.5 // [0.0 0.25 0.5 0.75 1.0 1.25 1.5 1.75 2.0]
 #define LIGHTING_STYLE 2 //[0 1 2]

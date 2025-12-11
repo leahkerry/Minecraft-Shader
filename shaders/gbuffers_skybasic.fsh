@@ -43,6 +43,6 @@ void main() {
 		color = calcSkyColor(normalize(pos.xyz), color);
 	}
 
-/* DRAWBUFFERS:0 */
+/* DRAWBUFFERS:2 */
 	gl_FragData[0] = vec4(color, 1.0); //gcolor
 }

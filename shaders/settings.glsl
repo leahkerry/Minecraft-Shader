@@ -16,7 +16,10 @@
 #define SATURATION 1.5 // [0.0 0.25 0.5 0.75 1.0 1.25 1.5 1.75 2.0]
 #define LIGHTING_STYLE 0 //[0 1]
 
-#define CLOUD_STYLE 1 //[0, 1]
+#define CLOUD_STYLE 1 //[0 1 2]
 #define CLOUD_FOG 0.5 // [0.0 0.25 0.5 0.75 1.0]
 #define CLOUD_SPEED 0.5 // [0.0 0.25 0.5. 0.75 1.0 1.2 1.5 1.7 2.0]
 #define CLOUD_COLOR_CHANGE 0 // [0, 1]
+
+#define BACKGROUND_RESOLUTION_DIVIDER 1 // [0 1 2 4 10]
+#define CLOUD_SAMPLES 20.0 // [10.0 20.0 30.0 100.0]

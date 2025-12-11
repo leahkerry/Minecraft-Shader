@@ -9,6 +9,8 @@ uniform sampler2D shadowtex1;
 uniform sampler2D texture;
 uniform sampler2D normals;
 uniform sampler2D specular;
+uniform int entityId; 
+uniform float aspectratio; 
 
 uniform float fogStart;
 uniform float fogEnd;
@@ -21,6 +23,8 @@ uniform vec3 shadowLightPosition; // sun or moon
 uniform int currentRenderedItemId;
 uniform int worldTime;
 uniform vec3 skyColor;
+uniform sampler2D gaux1;
+uniform sampler2D gaux2;
 
 varying vec2 lmcoord;
 varying vec2 texcoord;
@@ -45,6 +49,8 @@ vec3 adjust_sat2(vec3 color, float satBoost)
     float lum = dot(color + vec3(1.0, 1.0, 0.0), vec3(1.0, 0.0, 1.0));
     return mix(color, vec3(lum), satBoost);
 }
+
+
 
 void main() {
     vec3 new_skyColor = skyColor;
@@ -190,18 +196,26 @@ void main() {
         color.rgb = mix(color.rgb, new_skyColor, fogAmount);
 	#endif
 	
-	if (heldItemId == 1003) {
+	if (heldItemId == 1003 || (abs(material_id-10008. ) < EPSILON)) 
+    {
+        // color.rgb = calculate_bloom(color.rgb);
 		// bloom torch perimeter
 		float customAmount = clamp(
 			(distance(vec3(0.0), viewPos_v3) - (BORDER_FOG_START * far))/(1 - BORDER_FOG_START * far), 
 			0.0, 
 			1.0
 		);
-		color.rgb = mix(color.rgb, (color.rgb + vec3(0.4, 0.25, 0.0)), customAmount);
+		color.rgb = mix(color.rgb, (color.rgb + vec3(0.4, 0.3, 0.0)), 0.85 * customFog);
 	}
+    // color.rgb = calculate_bloom(color.rgb);
+
 
     // #if IS_ENTITY == 1
-    //     color.rgb *= vec3(1., 1., 1.);
+    //     // color.rgb *= vec3(1., 0., 1.);
+        // if (entityId == 10020) {
+        //     color.rgb = normals_face;
+        // }
+        // color.rgb = normals_face;
     // #endif
 
 

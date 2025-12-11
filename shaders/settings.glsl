@@ -17,7 +17,23 @@
 
 #define SATURATION 1.5 // [0.0 0.25 0.5 0.75 1.0 1.25 1.5 1.75 2.0]
 #define LIGHTING_STYLE 0 //[0 1]
+#define SOBEL_EFFECT
 
+// reflections
+#define FRESNEL 1.0 //[0.0 0.25 0.5 0.75 1.0]
+#define REFLECTION_THRESHHOLD 0.25 //[0.0 0.25 0.5 0.75]
+#define FRESNEL_EXPONENT 3.0 //[1.0 3.0 6.0]
+#define SSR_STEPS 10 //[5 10 20 30]
+#define SSR_REFINEMENT_STEPS 5 //[0 1 2 3 4 5 6 7 8 9 10]
+#define REFLECTIONS 1 //[0 1]
+
+#define HIGH_QUALITY_NORMALS 1 //[0 1]
+
+#if REFLECTIONS < 1 
+	program.composite4.enabled=false
+#endif
+
+// Clouds
 #define CLOUD_STYLE 1 //[0 1 2]
 #define CLOUD_FOG 0.5 // [0.0 0.25 0.5 0.75 1.0]
 #define CLOUD_SPEED 0.5 // [0.0 0.25 0.5. 0.75 1.0 1.2 1.5 1.7 2.0]

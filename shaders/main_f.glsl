@@ -193,7 +193,7 @@ void main() {
 		// float fogAmount = clamp((distance(vec3(0.0), viewPos_v3) - FOG_START)/(FOG_END - FOG_START), 0.0, FOG_MAX);
 		color.rgb = mix(color.rgb, fogColor, fogAmount);
         // Fog color replaced with sky color - buggy
-        color.rgb = mix(color.rgb, new_skyColor, fogAmount);
+        // color.rgb = mix(color.rgb, new_skyColor, fogAmount);
 	#endif
 	
 	if (heldItemId == 1003 || (abs(material_id-10008. ) < EPSILON)) 
@@ -212,10 +212,10 @@ void main() {
 
     // #if IS_ENTITY == 1
     //     // color.rgb *= vec3(1., 0., 1.);
-        // if (entityId == 10020) {
-        //     color.rgb = normals_face;
-        // }
-        // color.rgb = normals_face;
+    //     if (entityId == 10020) {
+    //         color.rgb = normals_face;
+    //     }
+    //     color.rgb = normals_face;
     // #endif
 
 
@@ -229,7 +229,7 @@ void main() {
     float specular = pow(lightDot2, 16.0);
 
     vec3 metallic = baseColor * (
-        lightDot2 + specular + 1.0
+        lightDot2 + specular + 0.9
     );
 
     color.rgb = mix(color.rgb, metallic, 0.7);

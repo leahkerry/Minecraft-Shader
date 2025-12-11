@@ -16,6 +16,9 @@ uniform vec3 cameraPosition;
 uniform float viewWidth;
 uniform float  viewHeight;
 uniform sampler2D lightmap;  
+uniform vec3 sunPosition;
+uniform vec3 moonPosition;
+uniform float shadowAngle;
 
 varying vec2 texcoord;
 varying vec2 lmcoord;
@@ -80,17 +83,18 @@ vec3 calculate_bloom(vec3 color) {
 }
 */
 
-vec3 torchHandLight(vec3 color){
-    // vec2 screenCenter = vec2(0.5, 0.5);
-    // float dist = distance(texcoord, screenCenter);
+// vec3 torchHandLight(vec3 color){
+//     vec2 screenCenter = vec2(0.5, 0.5);
+//     float dist = distance(texcoord, screenCenter);
     
-    // // higher the dist multiplier = smaller the focused circle of light
-    // float falloff = max(0.0, 1.0 - (dist * 3.0)); 
+//     // higher the dist multiplier = smaller the focused circle of light
+//     float falloff = max(0.0, 1.0 - (dist * 1.5)); 
     
-    // vec3 torchLight = vec3(1.0, 0.6, 0.2) * falloff * 0.3;
-    // color += torchLight;
-    return color;
-}
+//     // Warm orange torch color (fixed vector)
+//     vec3 torchLight = vec3(1.0, 0.7, 0.3) * falloff * 0.3;
+//     color += torchLight;
+//     return color;
+// }
 
 vec3 sobel_effect(vec3 color) {
     vec2 pixelSize = vec2(1.0 / viewWidth, 1.0 / viewHeight);
@@ -124,21 +128,59 @@ vec3 sobel_effect(vec3 color) {
     float threshold = 0.8; // between 0 and 1
     
     if(edgeMagnitude > threshold) {
-        color += vec3(0.1); // White for edges
+        color -= vec3(0.5, 0.5, 0.5); // White for edges
     }
 
     return color;
 }
 
+vec3 softLightDayNightCycle(vec3 color) {
+    float sunHeight = normalize(sunPosition).y;
+    float moonHeight = normalize(moonPosition).y;
+    bool isDay = sunHeight > 0.0;
+    
+    // Normalize shadowAngle to 0-1 range within each cycle
+    float cyclePhase = mod(shadowAngle / 6.28318, 1.0);
+    
+    vec3 tint;
+    float intensity;
+    
+    if (isDay) {
+        // Sunrise (0-0.25)
+        if (cyclePhase < 0.15) {
+            tint = mix(vec3(1.4, 0.5, 0.2), vec3(1.15, 0.95, 0.75), cyclePhase * 4.0);
+            intensity = mix(0.6, 0.3, cyclePhase);
+        }
+        // Midday (0.25-0.75)
+        else if (cyclePhase < 0.75) {
+            tint = vec3(1.0, 1.0, 1.0);
+            intensity = 0.05;
+        }
+        // Sunset (0.75-1.0)
+        else {
+            float sunsetProg = (cyclePhase - 0.75) * 4.0;
+            tint = mix(vec3(1.15, 0.95, 0.75), vec3(1.5, 0.4, 0.1), sunsetProg);
+            intensity = mix(0.3, 0.6, sunsetProg);
+        }
+        intensity *= max(0.1, sunHeight + 0.3);
+    }
+    
+    vec3 result = mix(color, color * tint, intensity * 0.2);
+    float glow = dot(color, vec3(0.299, 0.587, 0.114)) * intensity;
+    float horizonGlow = isDay ? (1.0 - abs(sunHeight)) : (1.0 - abs(moonHeight));
+    result += vec3(0.08) * glow * horizonGlow;
+    
+    return result;
+}
+
 void main()
 {
     vec3 color = texture2D(DRAW_SHADOW_MAP, texcoord).rgb;
-    // vec3 red = vec3(texcoord.x,0.0,texcoord.y);
-    // float amount = 0.5;
-    // color = make_red(color, amount);
-    if (heldItemId == 1003 || abs(material_id - 10008) < EPSILON) {
-        color = torchHandLight(color);
-    }
+    color.rgb = adjust_sat(color.rgb, satBoost);
+    // color.rgb = ditter_effect(color.rgb, texcoord);
+    // if (heldItemId == 1003 || abs(material_id - 10008) < EPSILON) {
+    //     color = torchHandLight(color);
+    // }
 
     #ifdef SOBEL_EFFECT
     color = sobel_effect(color);
@@ -156,6 +198,7 @@ void main()
     } else {
         // color = vec3(0.0);
     }
+
+    color = softLightDayNightCycle(color);
     gl_FragData[0] = vec4(color, 1.0); // gcolor
-    
 }

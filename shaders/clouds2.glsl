@@ -7,6 +7,7 @@ uniform sampler2D depthtex0;
 uniform mat4 gbufferProjectionInverse;
 uniform mat4 gbufferModelViewInverse;
 uniform float rainStrength;
+uniform vec3 skyColor;
 
 uniform int worldTime;
 uniform int heldItemId;
@@ -75,6 +76,7 @@ vec3 projectanddivide(mat4 projectionMatrix, vec3 pos) {
 void main() {
     vec3 color = texture2D(colortex2, texcoord).rgb;
     float depth = texture2D(depthtex0, texcoord).r;
+    float world_seconds = worldTime * 0.05;
 
     // sky mask
     #if BACKGROUND_RESOLUTION_DIVIDER == 1
@@ -94,8 +96,8 @@ void main() {
 
         float starting_distance = 1.0 / raydir.y;
 
-        vec2 uv = raydir.xz * starting_distance + 0.2 * frameTimeCounter * CLOUD_SPEED;
-        vec2 uv2 = raydir.xz * 3.0 * starting_distance - 0.2 * frameTimeCounter * (0.5 * CLOUD_SPEED); // different size + speed than first batch of clouds
+        vec2 uv = raydir.xz * starting_distance + 0.2 * world_seconds * CLOUD_SPEED;
+        vec2 uv2 = raydir.xz * 3.0 * starting_distance - 0.2 * world_seconds * (0.5 * CLOUD_SPEED); // different size + speed than first batch of clouds
 
         vec3 sky_color = color;
         // add clouds
@@ -106,26 +108,38 @@ void main() {
         if (raydir.y > 0.0) {
             vec3 player_pos = vec3(uv, 0.0);
             vec3 player_pos2 = vec3(uv2, 0.0);
-            float sky_density = 0.05;
+            float sky_density = 0.0;
 
             for (float s = 0.0; s < CLOUD_SAMPLES && clouds.a < 0.99; s++) {
                 // Goopy clouds hehe
                 vec3 ray_pos = player_pos + raydir * s * scale;
                 // vec3 ray_pos2 = player_pos2 + raydir * s * 3.0 * scale;
-                vec3 ray_pos2 = player_pos2 + raydir * (s - random3d(frameTimeCounter + vec3(texcoord, s))) * 3.0 * scale;
+                vec3 ray_pos2 = player_pos2 + raydir * (s - random3d(world_seconds + vec3(texcoord, s))) * 3.0 * scale;
 
                 // Jittery/Noisy clouds
                 // vec3 ray_pos = player_pos + raydir * (s - random3d(frameTimeCounter + vec3(texcoord, s))) * scale;
                 // vec3 ray_pos2 = player_pos2 + raydir * (s - random3d(frameTimeCounter + vec3(texcoord, s))) * 3.0 * scale;
                 
                 vec4 cloud = vec4(fractal_noise3d(ray_pos) * fractal_noise3d(ray_pos2));
+                
+                // Control cloud colors
+                float r_cloud = 1.0;
+                float g_cloud = 1.0;
+                float b_cloud = 1.0;
+
+                #if CLOUD_COLOR_CHANGE == 1
+                    r_cloud = sin(0.5 * world_seconds);
+                    g_cloud = cos(0.1 * world_seconds);
+                    b_cloud = sin(0.2 * world_seconds);
+                #endif
 
                 // making holes and density (change number of clouds)
                 clouds.a = clamp((clouds.a - (0.3 * (1.0 - rainStrength))) * 4.0, sky_density, 2.0);
-                clouds.rgb = mix(vec3(1.0), sky_color, min(1.0, s / CLOUD_SAMPLES + sky_density * (1.0 - clouds.a)));
+                clouds.rgb = mix(vec3(r_cloud, g_cloud, b_cloud), sky_color, min(1.0, s / CLOUD_SAMPLES + sky_density * (1.0 - clouds.a)));
 
                 // blend clouds
                 clouds.rgb = mix(clouds.rgb, cloud.rgb, (1.0 - clouds.a) * cloud.a);
+                // clouds.rgb = mix(clouds.rgb, skyColor, (1.0 - clouds.a) * cloud.a);
                 clouds.a = clamp(clouds.a + (1.0 - clouds.a) * cloud.a, 0.0, 1.0);
             }
 
@@ -135,20 +149,8 @@ void main() {
             // Don't draw clouds if not in the sky
             clouds = vec4(0.0);
         }
+
         float cloud_fog = 1.0 + 1.0 / raydir.y;
-        
-        // // Control cloud colors
-        // float r_cloud = 1.0;
-        // float g_cloud = 1.0;
-        // float b_cloud = 1.0;
-
-        // #if CLOUD_COLOR_CHANGE == 1
-        //     r_cloud = sin(0.5 * frameTimeCounter);
-        //     g_cloud = cos(0.1 * frameTimeCounter);
-        //     b_cloud = sin(0.2 * frameTimeCounter);
-        // #endif
-
-        // clouds.rgb = vec3(r_cloud, g_cloud, b_cloud); // white clouds
 
         // shading
         // clouds.rgb -= clamp((clouds.a - 0.5) * 0.1, 0.0, 0.25);

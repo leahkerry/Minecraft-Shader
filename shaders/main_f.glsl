@@ -137,12 +137,9 @@ void main() {
         {
             if (normals_face.y > 0.0) {
                 porosity = 1.;
-            } else {
-                porosity = 0.;
-            }
-        } else {
-            porosity = 0.;
-        }
+                // smoothness = 1.;
+            } 
+        } 
         if (abs(material_id-10002.) < EPSILON) //grass
         {
             sss = 0.;
@@ -155,34 +152,23 @@ void main() {
 
         // porisity effects
         // float actual_wetness = wetness * (lmcoord.y > .96?1.:0.);
-        float actual_wetness = wetness * (1. - clamp(lmcoord.y * .1, 0., 1.));
-        float wet_shine = clamp(actual_wetness - 0.5 * porosity, 0., 1.);
+        float actual_wetness = wetness * (1. - clamp(0.1 * lmcoord.y, 0., 1.));
+        float wet_shine = clamp(1.5 * actual_wetness  * porosity, 0., 1.);
         f0 += (1.-f0) * wet_shine * 0.7;
         
-        // if (normals_face.x > -EPSILON) {
-        //     // porosity = 1.;
-        //     smoothness += (1. - smoothness) * wet_shine;
-        //     // smoothness = 0.0;
-        // }
-        if (abs(material_id-10003. ) < EPSILON) //porous
-        {
-            // if (normals_face.y > 0.0) {
-                smoothness += (1. - smoothness) * wet_shine;
-            // } 
-        }
-        // if not a smooth element, dont reflect
+        smoothness += (1. - smoothness) * wet_shine;
+
 
         color.rgb *= 1. - porosity * actual_wetness*0.7;
         
         vec3 ray_dir = normalize(viewPos_v3.xyz);
 
         float fresnel = pow(clamp(1. + dot(normals_texture.xyz, ray_dir), 0., 1.), 2.) * FRESNEL;
-        // float fresnel = 1.; // TODO: fix
         float reflective_strength = f0 + (1. - f0) * fresnel * smoothness;
         vec3 sun_dir = normalize(shadowLightPosition);
         float lightDot = clamp(dot(sun_dir, normals_texture.xyz),0.,1.);
         if (abs(material_id - 10006.) < EPSILON) {
-            color.rgb = color.rgb + color.rgb * lightDot*(1. - reflective_strength);
+            color.rgb = color.rgb + color.rgb * clamp(lightDot*(1. - reflective_strength), 0., 1.);
         }
         // SPECULAR
         vec3 reflected_ray = reflect(ray_dir, normals_texture.xyz);

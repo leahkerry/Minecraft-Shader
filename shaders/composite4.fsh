@@ -157,6 +157,4 @@ void main()
     // color.rgb = normals.rgb * 0.5 + 0.5;
 	gl_FragData[0] = vec4(color.rgb, 1.0);
 
-    
-    
 }

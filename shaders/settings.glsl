@@ -31,9 +31,13 @@
 #define BLOOM_STRENGTH 0.5 //[0.0 0.25 0.5 0.75 0.85 1.0]
 #define HIGH_QUALITY_NORMALS 1 //[0 1]
 
+// #if CLOUD_STYLE == 0
+//     program.composite2.enabled = false
+// #endif
+
 #if BLOOM < 2 
-	// program.composite3.enabled=false
-    program.composite2.enabled=false
+    // program.composite2.enabled=false
+    program.composite3.enabled=false
 #endif
 
 #if REFLECTIONS < 1 

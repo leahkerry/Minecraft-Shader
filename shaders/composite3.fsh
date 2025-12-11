@@ -27,7 +27,12 @@ const float weight[10] = float[10](0.227027, 0.227027,0.1945946, 0.1945946,0.121
 
 
 void main() {
-	vec4 color = texture2D(colortex0, texcoord);
+	vec4 color = texture2D(colortex1, texcoord);
+    vec3 ground_color = texture2D(colortex0, texcoord).rgb;
+
+    if (texture2D(depthtex0, texcoord).r < 1.0) {
+        color.rgb = ground_color;
+    }
 
 	// // vec3 ground_color = texture2D(colortex0, texcoord).rgb;
 	// vec4 color = vec4(0.0);

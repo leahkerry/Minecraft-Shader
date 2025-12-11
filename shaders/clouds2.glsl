@@ -113,13 +113,13 @@ void main() {
 
             for (float s = 0.0; s < CLOUD_SAMPLES && clouds.a < 0.99; s++) {
                 // Goopy clouds hehe
-                // vec3 ray_pos = player_pos + raydir * s * scale;
+                vec3 ray_pos = player_pos + raydir * s * scale;
                 // vec3 ray_pos2 = player_pos2 + raydir * s * 3.0 * scale;
-                // vec3 ray_pos2 = player_pos2 + raydir * (s - random3d(world_seconds + vec3(texcoord, s))) * 3.0 * scale;
+                vec3 ray_pos2 = player_pos2 + raydir * (s - random3d(world_seconds + vec3(texcoord, s))) * 3.0 * scale;
 
                 // Jittery/Noisy clouds
-                vec3 ray_pos = player_pos + raydir * (s - random3d(world_seconds + vec3(texcoord, s))) * scale;
-                vec3 ray_pos2 = player_pos2 + raydir * (s - random3d(world_seconds + vec3(texcoord, s))) * 3.0 * scale;
+                // vec3 ray_pos = player_pos + raydir * (s - random3d(world_seconds + vec3(texcoord, s))) * scale;
+                // vec3 ray_pos2  = player_pos2 + raydir * (s - random3d(world_seconds + vec3(texcoord, s))) * 3.0 * scale;
                 
                 vec4 cloud = vec4(fractal_noise3d(ray_pos) * fractal_noise3d(ray_pos2));
                 

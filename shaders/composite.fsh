@@ -1,6 +1,5 @@
 #version 120
 
-#define SHADES 16.0
 #define DRAW_SHADOW_MAP gcolor //Configures which buffer to draw to the screen [gcolor shadowcolor0 shadowtex0 shadowtex1]
 #include "/settings.glsl"
 
@@ -46,8 +45,7 @@ vec3 ditter_effect(in vec3 color, in vec2 texCoord)
     // subtraction = darker (to black)
     // ditter = -0.5;
 
-    // vec3 ditteredColor = step(0.5, color + bayerValue);
-    return floor(color * SHADES + ditter) / SHADES;
+    return floor(color * DITTER_PRECISION + ditter) / DITTER_PRECISION;
 }
 
 vec3 adjust_sat(vec3 color, float satBoost)
@@ -177,7 +175,7 @@ void main()
 {
     vec3 color = texture2D(DRAW_SHADOW_MAP, texcoord).rgb;
     color.rgb = adjust_sat(color.rgb, satBoost);
-    // color.rgb = ditter_effect(color.rgb, texcoord);
+    
     // if (heldItemId == 1003 || abs(material_id - 10008) < EPSILON) {
     //     color = torchHandLight(color);
     // }
@@ -185,6 +183,11 @@ void main()
     #ifdef SOBEL_EFFECT
     color = sobel_effect(color);
     #endif
+
+    #ifdef DITTER_EFFECT
+    color.rgb = ditter_effect(color.rgb, texcoord);
+    #endif
+
     // draw buffer 0 is main one at end
     /* DRAWBUFFERS:0 */
     

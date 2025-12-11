@@ -18,6 +18,8 @@
 #define SATURATION 1.5 // [0.0 0.25 0.5 0.75 1.0 1.25 1.5 1.75 2.0]
 #define LIGHTING_STYLE 2 //[0 1 2]
 #define SOBEL_EFFECT
+#define DITTER_EFFECT
+#define DITTER_PRECISION 16.0 //[4.0 16.0 64.0 128.0]
 #define BACKGROUND_RESOLUTION_DIVIDER 1 //[1 2 4 10]
 
 // reflections

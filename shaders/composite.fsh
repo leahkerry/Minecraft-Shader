@@ -30,7 +30,7 @@ vec3 make_red(in vec3 color, in float amount) {
     return color;
 }
 
-vec3 ditter_effect(in vec3 color, in vec2 texCoord)
+vec3 dither_effect(in vec3 color, in vec2 texCoord)
 {
     mat4 bayerMat4 = mat4(
         vec4(0.0, 8.0, 2.0, 10.0),
@@ -40,12 +40,12 @@ vec3 ditter_effect(in vec3 color, in vec2 texCoord)
 
     int x = int(texCoord.x) % 4;
     int y = int(texCoord.y) % 4;
-    float ditter = bayerMat4[y][x] / 16.0;
+    float dither = bayerMat4[y][x] / 16.0;
     // addition = brighter (to white)
     // subtraction = darker (to black)
-    // ditter = -0.5;
+    // dither = -0.5;
 
-    return floor(color * DITTER_PRECISION + ditter) / DITTER_PRECISION;
+    return floor(color * DITHER_PRECISION + dither) / DITHER_PRECISION;
 }
 
 vec3 adjust_sat(vec3 color, float satBoost)
@@ -185,7 +185,7 @@ void main()
     #endif
 
     #ifdef DITTER_EFFECT
-    color.rgb = ditter_effect(color.rgb, texcoord);
+    color.rgb = dither_effect(color.rgb, texcoord);
     #endif
 
     // draw buffer 0 is main one at end

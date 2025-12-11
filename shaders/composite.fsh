@@ -14,8 +14,11 @@ uniform sampler2D shadowtex1;
 uniform int worldTime;
 uniform int heldItemId;
 uniform vec3 cameraPosition;
+uniform sampler2D lightmap;  
 
 varying vec2 texcoord;
+varying vec2 lmcoord;
+varying float material_id;
 
 vec4 colorA = vec4(0.1,0.0,0.1,0.2);
 
@@ -61,6 +64,33 @@ void increaseTemp()
 
 }
 
+/*
+vec3 calculate_bloom(vec3 color) {
+    // calculate float intensity and cover (0-1)
+    float bloomIntensity = 0.5;
+    float bloomCover = 0.5;
+    // aspectcorrect
+    // vec2 aspectcorrect = vec2(1., aspectratio);
+
+    // add for 4-9
+    vec3 bloomColor = vec3(0.);
+    bloomColor += max(vec3(0.0), texture2D(gaux2, texcoord.st, 4.0).rgb - bloomCover);
+    // bloomColor += max(0.0, texture2D(gaux2, texcoord.st, 4.0).rgb - bloomCover);
+
+    // divide by 6
+
+    // desaturate
+    float luma = dot(bloomColor, vec3(1.));
+    vec3 chroma = bloomColor - luma; 
+    // bloomColor = (chroma * )
+
+    // prevent overexopsure 
+    color += bloomColor * bloomIntensity;
+    return color;
+
+}
+*/
+
 vec3 torchHandLight(vec3 color){
     vec2 screenCenter = vec2(0.5, 0.5);
     float dist = distance(texcoord, screenCenter);
@@ -82,11 +112,23 @@ void main()
     color = adjust_sat(color, satBoost);
     // color = mix_over_time(color);
     // color = make_red(color, amount);
-    if (heldItemId == 1003) {
+    if (heldItemId == 1003 || abs(material_id - 10008) < EPSILON) {
         color = torchHandLight(color);
+        color = vec3(0.0);
     }
     // draw buffer 0 is main one at end
     /* DRAWBUFFERS:0 */
-
+    
+    // color = texture2D(shadowcolor0, lmcoord).xyz;
+    float bloomThresh = 0.75;
+    // vec4 bright_color = color;
+    float lum = dot(color.rgb, vec3(0.2126, 0.7152, 0.0722));
+    if (lum > bloomThresh) {
+        // Sample blurred texture here, or add to a running sum
+        // color = color * lum; // Simplified, needs proper blur
+    } else {
+        // color = vec3(0.0);
+    }
     gl_FragData[0] = vec4(color, 1.0); // gcolor
+    
 }

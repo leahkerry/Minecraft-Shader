@@ -1,4 +1,3 @@
-uniform float frameTimeCounter;
 uniform float satBoost = SATURATION;
 uniform sampler2D colortex0;
 uniform sampler2D colortex1;
@@ -16,7 +15,7 @@ varying vec2 texcoord;
 
 float random(in vec2 p) {
     return fract(sin((p.x * 456. + p.y * 312. * 100)) * 100.);
-    // return fract(sin((p.x * 456. + p.y * 312. + mod(frameTimeCounter, 10.) * 100)) * 100.);
+    // return fract(sin((p.x * 456. + p.y * 312. + mod(world_seconds, 10.) * 100)) * 100.);
 }
 
 vec2 smooth_vec2(in vec2 v) {
@@ -61,14 +60,13 @@ vec3 projectanddivide(mat4 projectionMatrix, vec3 pos) {
 void main() {
     vec3 color = texture2D(colortex2, texcoord).rgb;
     float depth = texture2D(depthtex0, texcoord).r;
+    float world_seconds = worldTime * 0.05;
 
     // sky mask
     #if BACKGROUND_RESOLUTION_DIVIDER == 1
         if (depth == 1.0)
     #endif
     {
-        // color.rgb = vec3(0., 0., 1.);
-
         vec4 pos = vec4(texcoord, depth, 1.) * 2.0 - 1.0; // ndc
         // convert to view position/camera coordinates
         pos.xyz = projectanddivide(gbufferProjectionInverse, pos.xyz);
@@ -77,8 +75,8 @@ void main() {
 
         // get direction of each pixel
         vec3 raydir = normalize(pos.xyz);
-        vec2 uv = raydir.xz * 1.0 / raydir.y + 0.2 * frameTimeCounter * CLOUD_SPEED;
-        vec2 uv2 = raydir.xz * 3.0 * 1.0 / raydir.y - 0.2 * frameTimeCounter * (0.5 * CLOUD_SPEED); // different size + speed than first batch of clouds
+        vec2 uv = raydir.xz * 1.0 / raydir.y + 0.2 * world_seconds * CLOUD_SPEED;
+        vec2 uv2 = raydir.xz * 3.0 * 1.0 / raydir.y - 0.2 * world_seconds * (0.5 * CLOUD_SPEED); // different size + speed than first batch of clouds
 
         // add clouds
         vec4 clouds;
@@ -99,9 +97,9 @@ void main() {
         float b_cloud = 1.0;
 
         #if CLOUD_COLOR_CHANGE == 1
-            r_cloud = sin(0.5 * frameTimeCounter);
-            g_cloud = cos(0.1 * frameTimeCounter);
-            b_cloud = sin(0.2 * frameTimeCounter);
+            r_cloud = sin(0.5 * world_seconds);
+            g_cloud = cos(0.1 * world_seconds);
+            b_cloud = sin(0.2 * world_seconds);
         #endif
 
         clouds.rgb = vec3(r_cloud, g_cloud, b_cloud); // white clouds
@@ -111,8 +109,6 @@ void main() {
 
         // blending
         color.rgb = mix(color.rgb, clouds.rgb, min(clouds.a, 1.) / max(1.0, cloud_fog * CLOUD_FOG));
-
-        // color.rgb += vec3(fractal_noise(uv) * fractal_noise(uv2));
     }
 
     depth = depth == 1.0 ? 1.0 : 0.0;

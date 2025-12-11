@@ -84,8 +84,6 @@ void main() {
         if (depth == 1.0)
     #endif
     {
-        // color.rgb = vec3(0., 0., 1.);
-
         vec4 pos = vec4(texcoord, depth, 1.) * 2.0 - 1.0; // ndc
         // convert to view position/camera coordinates
         pos.xyz = projectanddivide(gbufferProjectionInverse, pos.xyz);
@@ -128,6 +126,7 @@ void main() {
                 float g_cloud = 0.6;
                 float b_cloud = 0.9;
 
+                // White cloud colors
                 // float r_cloud = 1.0;
                 // float g_cloud = 1.0;
                 // float b_cloud = 1.0;

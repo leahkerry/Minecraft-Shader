@@ -121,15 +121,17 @@ void main() {
         float emmisive = 0.;
 
         //ipbr
-        if( abs(material_id-10003. ) < EPSILON) //porous
+        if (abs(material_id-10003. ) < EPSILON) //porous
         {
-            porosity = 1.;
+            if (normals_face.y > 0.0) {
+                porosity = 1.;
+            }
         }
-        if(abs(material_id-10002.) < EPSILON) //grass
+        if (abs(material_id-10002.) < EPSILON) //grass
         {
             sss = 0.;
         }
-        if(abs(material_id-10006.) < EPSILON) //water
+        if (abs(material_id-10006.) < EPSILON) //water
         {
             f0 = 0.5;
             smoothness = 1.;
@@ -182,35 +184,41 @@ void main() {
 	
 	if (heldItemId == 1003) {
 		// bloom torch perimeter
-		float customFog = clamp(
+		float customAmount = clamp(
 			(distance(vec3(0.0), viewPos_v3) - (BORDER_FOG_START * far))/(1 - BORDER_FOG_START * far), 
 			0.0, 
 			1.0
 		);
-		color.rgb = mix(color.rgb, (color.rgb + vec3(0.4, 0.3, 0.0)), customFog);
+		color.rgb = mix(color.rgb, (color.rgb + vec3(0.4, 0.25, 0.0)), customAmount);
 	}
 
     // #if IS_ENTITY == 1
     //     color.rgb *= vec3(1., 1., 1.);
     // #endif
 
-    if (currentRenderedItemId == 1002) {
-		vec3 baseColor = color.rgb * 0.5;
-		vec3 skylightDir = normalize(shadowLightPosition);
 
-		float lightDot = dot(skylightDir, normals_face);
-		float specular = pow(lightDot, 16.0);
-		float time = mod(gl_FragCoord.y + gl_FragCoord.y + worldTime, 1000.0) * 0.01;		
-		// float animSpec = sin(time * 5.0) * 0.2;
-		float glow = sin(time * 2.0) * 0.5 + 0.5;
+    
 
-		vec3 metallic = baseColor * (
-			lightDot + specular + 1.0
-		);
+    /// ----
+    
+    vec3 baseColor = color.rgb * 0.5;
+    vec3 skylightDir = normalize(shadowLightPosition);
+    float lightDot2 = dot(skylightDir, normals_face);
+    float specular = pow(lightDot2, 16.0);
 
-		color.rgb = mix(color.rgb, metallic, 0.7);
-	}
+    // float time = mod(gl_FragCoord.y + gl_FragCoord.y + worldTime, 1000.0) * 0.01;		
+    // float animSpec = sin(time * 5.0) * 0.2;
+    // float glow = sin(time * 2.0) * 0.5 + 0.5;
 
+    vec3 metallic = baseColor * (
+        lightDot2 + specular + 1.0
+    );
+
+    color.rgb = mix(color.rgb, metallic, 0.5);
+
+    float lightMix = clamp(sin(sunAngle), 0.0, 1.0);
+    color.rgb += texture2D(lightmap, lm).rgb * color.rgb * lm.x * mix(0.3, 0.5, lightMix);
+    // ----
 
     /* DRAWBUFFERS:0 */
     /* RENDERTARGETS: 0,2,3 */

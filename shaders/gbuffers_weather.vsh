@@ -2,6 +2,7 @@
 
 varying vec2 texcoord;
 varying vec4 glcolor;
+uniform int worldTime;
 
 void main() {
 	gl_Position = ftransform();

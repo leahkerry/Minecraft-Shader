@@ -12,6 +12,8 @@ uniform sampler2D shadowtex1;
 uniform int worldTime;
 uniform int heldItemId;
 uniform vec3 cameraPosition;
+uniform float viewWidth;
+uniform float  viewHeight;
 
 varying vec2 texcoord;
 

@@ -89,6 +89,14 @@ void main()
     }
     #endif
 
+	if (abs(material_id - 10000.0) < EPSILON) {
+		float xpos = (gbufferModelViewInverse * viewPos).x;
+        vec3 eyeCameraPosition = cameraPosition + gbufferModelViewInverse[3].xyz;
+        xpos = xpos + eyeCameraPosition.x;
+        gl_Position.x = gl_Position.x + sin(0.001 * worldTime * xpos) * 0.05;
+	}
+
+
     #if IS_ENTITY == 1
     if (entityId == 10010) {
         float xpos = (gbufferModelViewInverse * viewPos).x;
@@ -97,7 +105,7 @@ void main()
         xpos = xpos + eyeCameraPosition.x;
         // gl_Position.y = gl_Position.y + eyeCameraPosition.y;
         gl_Position.y = gl_Position.y + sin(0.001 * worldTime * xpos) * 0.15;
-        
     }
+
     #endif
 }

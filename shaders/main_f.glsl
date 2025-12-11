@@ -205,7 +205,7 @@ void main() {
 			0.0, 
 			1.0
 		);
-		color.rgb = mix(color.rgb, (color.rgb + vec3(0.4, 0.3, 0.0)), 0.85 * customFog);
+		color.rgb = mix(color.rgb, (color.rgb + vec3(0.4, 0.3, 0.0)), 0.85 * customAmount);
 	}
     // color.rgb = calculate_bloom(color.rgb);
 

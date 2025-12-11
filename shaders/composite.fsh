@@ -130,44 +130,6 @@ vec3 sobel_effect(vec3 color) {
     return color;
 }
 
-vec3 sobel_effect(vec3 color) {
-    vec2 pixelSize = vec2(1.0 / viewWidth, 1.0 / viewHeight);
-
-    // horizontal gaussian smoothing
-    mat3 gx = mat3(
-        vec3(-1.0, 0.0, 1.0), 
-        vec3(-2.0, 0.0, 2.0), 
-        vec3(-1.0, 0.0, 1.0)
-    );
-
-    // vertical gaussian smoothing
-    mat3 gy = mat3(
-        vec3(-1.0, -2.0, -1.0), 
-        vec3(0.0, 0.0, 0.0), 
-        vec3(1.0, 2.0, 1.0)
-    );
-
-    vec3 edgeX = vec3(0.0);
-    vec3 edgeY = vec3(0.0);
-    
-    for(int i = -1; i <= 1; i++) {
-        for(int j = -1; j <= 1; j++) {
-            vec3 sample = texture2D(DRAW_SHADOW_MAP, texcoord + vec2(i, j) * pixelSize).rgb;
-            edgeX += sample * gx[i+1][j+1];
-            edgeY += sample * gy[i+1][j+1];
-        }
-    }
-    
-    float edgeMagnitude = length(sqrt(edgeX * edgeX + edgeY * edgeY));
-    float threshold = 0.8; // between 0 and 1
-    
-    if(edgeMagnitude > threshold) {
-        color += vec3(0.1); // White for edges
-    }
-
-    return color;
-}
-
 void main()
 {
     vec3 color = texture2D(DRAW_SHADOW_MAP, texcoord).rgb;

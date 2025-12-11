@@ -1,8 +1,6 @@
 #version 120
 
-#define DRAW_SHADOW_MAP gcolor // Configures which buffer to draw to the screen [gcolor shadowcolor0 shadowtex0 shadowtex1]
-#define SHADES 16.0 // level of definition
-
+#define DRAW_SHADOW_MAP gcolor //Configures which buffer to draw to the screen [gcolor shadowcolor0 shadowtex0 shadowtex1]
 #include "/settings.glsl"
 
 uniform float frameTimeCounter;
@@ -19,11 +17,8 @@ uniform float  viewHeight;
 
 varying vec2 texcoord;
 
-vec4 colorA = vec4(0.1,0.0,0.1,0.2);
-
-vec3 make_red(in vec3 color, in float amount)
-{
-    color = mix(color, vec3(1.0, 1.0, 1.0), amount);
+vec3 make_red(in vec3 color, in float amount) {
+    color = mix(color, vec3(1.0,0.0,0.0), amount);
     return color;
 }
 
@@ -112,10 +107,7 @@ void main()
 {
     vec3 color = texture2D(DRAW_SHADOW_MAP, texcoord).rgb;
     // vec3 red = vec3(texcoord.x,0.0,texcoord.y);
-    float amount = 0.5;
-    // color = ditter_effect(color, texcoord);
-    color = adjust_sat(color, satBoost);
-    // color = mix_over_time(color);
+    // float amount = 0.5;
     // color = make_red(color, amount);
     if (heldItemId == 1003) {
         color = torchHandLight(color);
@@ -126,6 +118,5 @@ void main()
     #endif
     // draw buffer 0 is main one at end
     /* DRAWBUFFERS:0 */
-
-    gl_FragData[0] = vec4(color, 1.0); // gcolor
+    gl_FragData[0] = vec4(color, 1.0); //gcolor
 }

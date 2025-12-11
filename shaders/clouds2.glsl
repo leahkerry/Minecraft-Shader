@@ -8,6 +8,7 @@ uniform mat4 gbufferProjectionInverse;
 uniform mat4 gbufferModelViewInverse;
 uniform float rainStrength;
 uniform vec3 skyColor;
+varying vec4 glcolor;
 
 uniform int worldTime;
 uniform int heldItemId;
@@ -112,20 +113,24 @@ void main() {
 
             for (float s = 0.0; s < CLOUD_SAMPLES && clouds.a < 0.99; s++) {
                 // Goopy clouds hehe
-                vec3 ray_pos = player_pos + raydir * s * scale;
+                // vec3 ray_pos = player_pos + raydir * s * scale;
                 // vec3 ray_pos2 = player_pos2 + raydir * s * 3.0 * scale;
-                vec3 ray_pos2 = player_pos2 + raydir * (s - random3d(world_seconds + vec3(texcoord, s))) * 3.0 * scale;
+                // vec3 ray_pos2 = player_pos2 + raydir * (s - random3d(world_seconds + vec3(texcoord, s))) * 3.0 * scale;
 
                 // Jittery/Noisy clouds
-                // vec3 ray_pos = player_pos + raydir * (s - random3d(frameTimeCounter + vec3(texcoord, s))) * scale;
-                // vec3 ray_pos2 = player_pos2 + raydir * (s - random3d(frameTimeCounter + vec3(texcoord, s))) * 3.0 * scale;
+                vec3 ray_pos = player_pos + raydir * (s - random3d(world_seconds + vec3(texcoord, s))) * scale;
+                vec3 ray_pos2 = player_pos2 + raydir * (s - random3d(world_seconds + vec3(texcoord, s))) * 3.0 * scale;
                 
                 vec4 cloud = vec4(fractal_noise3d(ray_pos) * fractal_noise3d(ray_pos2));
                 
                 // Control cloud colors
-                float r_cloud = 1.0;
-                float g_cloud = 1.0;
-                float b_cloud = 1.0;
+                float r_cloud = 0.9;
+                float g_cloud = 0.6;
+                float b_cloud = 0.9;
+
+                // float r_cloud = 1.0;
+                // float g_cloud = 1.0;
+                // float b_cloud = 1.0;
 
                 #if CLOUD_COLOR_CHANGE == 1
                     r_cloud = sin(0.5 * world_seconds);
@@ -138,7 +143,7 @@ void main() {
                 clouds.rgb = mix(vec3(r_cloud, g_cloud, b_cloud), sky_color, min(1.0, s / CLOUD_SAMPLES + sky_density * (1.0 - clouds.a)));
 
                 // blend clouds
-                clouds.rgb = mix(clouds.rgb, cloud.rgb, (1.0 - clouds.a) * cloud.a);
+                clouds.rgb = mix(clouds.rgb, cloud.rgb, (1.0 - clouds.a) * cloud.a) * skyColor;
                 // clouds.rgb = mix(clouds.rgb, skyColor, (1.0 - clouds.a) * cloud.a);
                 clouds.a = clamp(clouds.a + (1.0 - clouds.a) * cloud.a, 0.0, 1.0);
             }

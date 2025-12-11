@@ -33,12 +33,7 @@
 #define BLOOM_STRENGTH 0.5 //[0.0 0.25 0.5 0.75 0.85 1.0]
 #define HIGH_QUALITY_NORMALS 1 //[0 1]
 
-// #if CLOUD_STYLE == 0
-//     program.composite2.enabled = false
-// #endif
-
 #if BLOOM < 2 
-    // program.composite2.enabled=false
     program.composite3.enabled=false
 #endif
 
@@ -50,7 +45,7 @@
 #define CLOUD_STYLE 1 //[0 1 2]
 #define CLOUD_FOG 0.5 // [0.0 0.25 0.5 0.75 1.0]
 #define CLOUD_SPEED 0.5 // [0.0 0.25 0.5. 0.75 1.0 1.2 1.5 1.7 2.0]
-#define CLOUD_COLOR_CHANGE 0 // [0, 1]
+#define CLOUD_COLOR_CHANGE 0 // [0 1]
 
 #define BACKGROUND_RESOLUTION_DIVIDER 1 // [0 1 2 4 10]
 #define CLOUD_SAMPLES 20.0 // [10.0 20.0 30.0 100.0]

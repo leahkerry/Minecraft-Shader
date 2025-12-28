@@ -149,6 +149,11 @@ void main() {
             f0 = 0.5;
             smoothness = 1.;
         }
+        if (abs(material_id-10007.) < EPSILON) //metal
+        {
+            f0 = 0.5;
+            smoothness = 0.5;
+        }
 
         // porisity effects
         // float actual_wetness = wetness * (lmcoord.y > .96?1.:0.);
@@ -249,6 +254,6 @@ void main() {
 	#endif
     gl_FragData[0] = color; //gcolor
 	gl_FragData[1] = vec4(normals_texture.xyz*.5+.5, 1.); 
-	gl_FragData[2] = vec4(smoothness,reflective_strength,(abs(material_id-10006.) < .5?1.:0.) ,f0); 
+	gl_FragData[2] = vec4(smoothness,reflective_strength,(abs(material_id-10006.) < .5 || abs(material_id-10007.) < .5?1.:0.) ,f0); 
 
 }
